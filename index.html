@@ -4,163 +4,489 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- 브라우저 탭에 보이는 제목 -->
-  <title>[제품 이름] | 나만의 피지컬 AI</title>
-  <meta name="description" content="[제품 한 줄 소개]">
+  <title>OccuCool | 재실 인원 기반 냉난방 자동 제어 엣지 AI</title>
+  <meta name="description" content="OccuCool(오큐쿨)은 카메라 AI가 실내 인원수를 세어 에어컨을 자동으로 조절하는 엣지 AI 컨트롤러입니다. 영상은 기기 안에서만 처리합니다.">
 
-  <!-- 글꼴: Pretendard -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <!-- 글꼴: Noto Sans KR (stitch 디자인 시스템 기준) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
 
   <style>
-    /* ===== 색상 설정: 이 값만 바꿔도 전체 분위기가 바뀝니다 ===== */
+    /* ===== 색상 설정: stitch/occucool-landing/DESIGN.md 기준 ===== */
     :root {
-      --bg: #F5F6F3;       /* 배경 */
-      --ink: #1E2422;      /* 기본 글자 */
-      --muted: #5E6764;    /* 보조 글자 */
-      --line: #D5D9D4;     /* 구분선 */
-      --accent: #F5C518;   /* 강조 색 */
-      --surface: #FFFFFF;  /* 이미지 영역 등 */
+      --primary: #0F2B48;        /* 딥 마린 블루: 제목, 구조 */
+      --primary-hover: #173C63;
+      --accent: #EA580C;         /* 써멀 오렌지: 강조, 주요 버튼 */
+      --accent-soft: #FFEDD5;
+      --accent-ink: #C2410C;
+      --cyan: #0284C7;           /* 냉방, 엣지 연산 상태 */
+      --cyan-soft: #E0F2FE;
+      --cyan-ink: #0369A1;
+      --green: #10B981;          /* 라이브 상태 점 */
+      --bg: #FFFFFF;
+      --surface-low: #F8FAFC;
+      --surface-mid: #F1F5F9;
+      --tint: #EFF4FF;           /* 연한 파란 배경 띠 */
+      --line: #E2E8F0;
+      --line-strong: #CBD5E1;
+      --ink: #0F172A;
+      --muted: #475569;
+      --faint: #94A3B8;
+      --shadow-1: 0 1px 3px rgba(15, 43, 72, 0.04), 0 10px 30px -5px rgba(15, 43, 72, 0.06);
+      --shadow-2: 0 4px 6px -1px rgba(15, 43, 72, 0.04), 0 20px 40px -10px rgba(15, 43, 72, 0.10);
+      --shadow-3: 0 20px 25px -5px rgba(15, 43, 72, 0.08), 0 8px 10px -6px rgba(15, 43, 72, 0.04);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 
     body {
-      font-family: "Pretendard", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      font-family: "Noto Sans KR", "Noto Sans", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       background: var(--bg);
       color: var(--ink);
-      line-height: 1.7;
+      font-size: 15px;
+      line-height: 1.6;
       word-break: keep-all;
+      -webkit-font-smoothing: antialiased;
     }
 
-    img { max-width: 100%; display: block; }
-    a { color: inherit; }
-    a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    img, svg { display: block; }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--primary); outline-offset: 2px;
+    }
+    .num { font-variant-numeric: tabular-nums; }
 
-    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+
+    /* 아이콘: 1.5px 선 */
+    .icon { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ----- 버튼 ----- */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 28px; border-radius: 8px;
+      font-weight: 600; font-size: 15px; border: 1px solid transparent;
+      cursor: pointer; font-family: inherit; transition: box-shadow .2s, background .2s, transform .1s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { box-shadow: 0 8px 20px -4px rgba(234, 88, 12, 0.35); }
+    .btn-ghost { background: #fff; color: var(--primary); border-color: var(--line); }
+    .btn-ghost:hover { background: var(--surface-low); border-color: var(--line-strong); }
+    .btn-sm { padding: 8px 18px; font-size: 14px; }
+
+    /* ----- 배지 ----- */
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+    }
+    .pill-warm { background: var(--accent-soft); color: var(--accent-ink); }
+    .pill-cool { background: var(--cyan-soft); color: var(--cyan-ink); }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); position: relative; }
+    .live-dot::after {
+      content: ""; position: absolute; inset: -4px; border-radius: 50%;
+      border: 2px solid var(--green); opacity: 0; animation: pulse 1.8s ease-out infinite;
+    }
+    @keyframes pulse { 0% { transform: scale(.5); opacity: .8; } 100% { transform: scale(1.4); opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) { .live-dot::after { animation: none; } html { scroll-behavior: auto; } }
 
     /* ----- 상단 메뉴 ----- */
-    header { border-bottom: 1px solid var(--line); }
-    .nav {
-      display: flex; justify-content: space-between; align-items: center;
-      height: 64px;
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
     }
-    .logo { font-weight: 800; font-size: 1.1rem; text-decoration: none; }
-    .nav ul { display: flex; gap: 24px; list-style: none; }
-    .nav ul a { text-decoration: none; color: var(--muted); font-size: 0.95rem; }
-    .nav ul a:hover { color: var(--ink); }
+    .nav { display: flex; justify-content: space-between; align-items: center; height: 68px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: var(--primary); letter-spacing: -0.02em; }
+    .logo-mark {
+      width: 30px; height: 30px; border-radius: 8px; background: var(--primary);
+      display: grid; place-items: center; color: #fff;
+    }
+    .logo-mark .icon { width: 18px; height: 18px; }
+    .nav ul { display: flex; gap: 32px; list-style: none; }
+    .nav ul a { color: var(--muted); font-size: 14px; font-weight: 500; }
+    .nav ul a:hover { color: var(--primary); }
 
     /* ----- 첫 화면 ----- */
+    .hero-bg { background: linear-gradient(180deg, var(--tint) 0%, #fff 100%); }
     .hero {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
-      align-items: center; padding: 88px 0;
+      display: grid; grid-template-columns: 1fr 1.05fr; gap: 56px;
+      align-items: center; padding: 96px 32px 112px;
     }
     .hero h1 {
-      font-size: clamp(2.6rem, 6vw, 4.2rem);
-      font-weight: 800; line-height: 1.1; letter-spacing: -0.03em;
+      margin-top: 20px;
+      font-size: 56px; font-weight: 800; line-height: 1.18; letter-spacing: -0.03em;
+      color: var(--primary);
     }
-    .hero .tagline { margin-top: 20px; font-size: 1.2rem; color: var(--muted); max-width: 30em; }
-    .button {
-      display: inline-block; margin-top: 32px; padding: 14px 26px;
-      background: var(--ink); color: var(--bg);
-      text-decoration: none; font-weight: 600; border-radius: 999px;
-    }
-    .button:hover { background: #000; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero .tagline { margin-top: 20px; font-size: 18px; line-height: 1.65; color: var(--muted); max-width: 30em; }
+    .hero .actions { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .trust { margin-top: 32px; display: flex; gap: 24px; flex-wrap: wrap; list-style: none; font-size: 13px; color: var(--muted); }
+    .trust li { display: flex; align-items: center; gap: 6px; }
+    .trust .icon { width: 16px; height: 16px; color: var(--primary); }
 
-    /* 제품 이미지 자리: 이미지를 넣으면 회색 안내 문구 대신 사진이 보입니다 */
-    .product-shot {
-      background: var(--accent);
-      border-radius: 24px;
-      padding: 28px;
+    /* 첫 화면 오른쪽: 대시보드 미리보기 */
+    .device-panel {
+      background: #fff; border: 1px solid var(--line); border-radius: 24px;
+      box-shadow: var(--shadow-3); overflow: hidden;
     }
-    .product-shot .frame {
-      aspect-ratio: 4 / 3;
-      background: var(--surface);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--muted); text-align: center; overflow: hidden;
+    .room {
+      position: relative; height: 230px;
+      background:
+        linear-gradient(180deg, rgba(15,43,72,.0) 40%, rgba(15,43,72,.35) 100%),
+        repeating-linear-gradient(90deg, #dbe6f3 0 2px, transparent 2px 96px),
+        linear-gradient(180deg, #eef3fa 0%, #d9e4f1 100%);
     }
-    .product-shot .frame img { width: 100%; height: 100%; object-fit: cover; }
+    .room .ceiling-node {
+      position: absolute; top: 22px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .room .lens {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: radial-gradient(circle, #1e293b 0 30%, #334155 31% 45%, #e2e8f0 46% 100%);
+      border: 4px solid #fff; box-shadow: 0 0 0 8px rgba(234, 88, 12, 0.18), var(--shadow-2);
+    }
+    .room .fov {
+      position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 0; border-left: 150px solid transparent; border-right: 150px solid transparent;
+      border-top: 150px solid rgba(2, 132, 199, 0.10);
+    }
+    .room .node-tag {
+      background: rgba(15, 43, 72, .9); color: #fff; font-size: 12px; font-weight: 600;
+      padding: 4px 12px; border-radius: 999px; display: flex; align-items: center; gap: 6px;
+    }
+    .room .people { position: absolute; bottom: 18px; left: 0; right: 0; display: flex; justify-content: center; gap: 14px; }
+    .room .person { width: 22px; height: 34px; position: relative; }
+    .room .person::before { content: ""; position: absolute; top: 0; left: 5px; width: 12px; height: 12px; border-radius: 50%; background: #fff; }
+    .room .person::after { content: ""; position: absolute; bottom: 0; left: 0; width: 22px; height: 20px; border-radius: 11px 11px 4px 4px; background: #fff; }
+    .room .person.box { outline: 1.5px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
+
+    .panel-body { padding: 24px 28px 28px; }
+    .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .panel-head strong { display: flex; align-items: center; gap: 10px; font-size: 16px; color: var(--primary); }
+    .readouts { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .readout { background: var(--surface-low); border: 1px solid var(--surface-mid); border-radius: 12px; padding: 14px 16px; }
+    .readout span { display: block; font-size: 12px; color: var(--muted); }
+    .readout b { display: block; margin-top: 4px; font-size: 20px; color: var(--primary); letter-spacing: -0.02em; }
+    .readout b.hot { color: var(--accent); }
+    .panel-foot {
+      margin-top: 16px; display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; color: var(--muted); padding-top: 16px; border-top: 1px solid var(--line);
+    }
+    .panel-foot .saving { color: var(--green); font-weight: 700; font-size: 16px; }
 
     /* ----- 공통 섹션 ----- */
-    section.block { padding: 80px 0; border-top: 1px solid var(--line); }
-    section.block h2 { font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 16px; }
-    section.block .lead { color: var(--muted); max-width: 36em; font-size: 1.05rem; }
+    section.block { padding: 112px 0; }
+    section.alt { background: var(--surface-low); }
+    .sec-head { text-align: center; max-width: 720px; margin: 0 auto 56px; }
+    .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; }
+    .sec-head h2 { margin-top: 12px; font-size: 40px; font-weight: 800; line-height: 1.25; letter-spacing: -0.02em; color: var(--primary); }
+    .sec-head p { margin-top: 14px; font-size: 17px; color: var(--muted); }
 
-    /* ----- 작동 방식: 감지 → 판단 → 행동 ----- */
-    .flow {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
-      margin-top: 40px; list-style: none; counter-reset: step;
+    .card {
+      background: #fff; border: 1px solid var(--surface-mid); border-radius: 16px;
+      box-shadow: var(--shadow-1); padding: 28px;
+      transition: box-shadow .2s, transform .2s;
     }
-    .flow li {
-      padding: 0 28px 0 0; position: relative; counter-increment: step;
+    .card:hover { box-shadow: var(--shadow-2); transform: translateY(-2px); }
+    .icon-box {
+      width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+      background: var(--accent-soft); color: var(--accent);
     }
-    .flow li::before {
-      content: counter(step);
-      display: flex; align-items: center; justify-content: center;
-      width: 40px; height: 40px; margin-bottom: 18px;
-      border-radius: 50%; background: var(--accent);
-      font-weight: 800;
-    }
-    /* 단계 사이 연결선 */
-    .flow li:not(:last-child)::after {
-      content: ""; position: absolute; top: 20px; left: 52px; right: 12px;
-      height: 2px; background: var(--line);
-    }
-    .flow h3 { font-size: 1.2rem; margin-bottom: 6px; }
-    .flow p { color: var(--muted); }
+    .icon-box.cool { background: var(--cyan-soft); color: var(--cyan-ink); }
+    .icon-box.navy { background: var(--tint); color: var(--primary); }
 
-    /* ----- 주요 기능 ----- */
-    .features { margin-top: 40px; list-style: none; }
-    .features li {
-      display: grid; grid-template-columns: 220px 1fr; gap: 24px;
-      padding: 24px 0; border-bottom: 1px solid var(--line);
+    /* ----- 문제 ----- */
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .problem .pill { margin-top: 20px; }
+    .problem h3 { margin-top: 12px; font-size: 18px; font-weight: 700; color: var(--primary); }
+    .problem p { margin-top: 8px; color: var(--muted); font-size: 14px; }
+    .problem .note {
+      margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);
+      font-size: 13px; color: var(--accent-ink); display: flex; gap: 6px; align-items: flex-start;
     }
-    .features li:first-child { border-top: 1px solid var(--line); }
-    .features h3 { font-size: 1.15rem; }
-    .features p { color: var(--muted); }
+    .problem .note .icon { width: 16px; height: 16px; flex: none; margin-top: 2px; }
 
-    /* ----- 만든 사람 / 하단 ----- */
-    footer { border-top: 1px solid var(--line); padding: 40px 0 56px; color: var(--muted); font-size: 0.95rem; }
-    footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .why-ai {
+      margin-top: 40px; display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center;
+      background: var(--primary); color: #fff; border-radius: 16px; padding: 32px 36px;
+    }
+    .why-ai .icon-box { background: rgba(255,255,255,.1); color: #fff; width: 52px; height: 52px; }
+    .why-ai h3 { font-size: 18px; font-weight: 700; }
+    .why-ai p { margin-top: 6px; color: #cbd8e8; font-size: 15px; }
 
-    /* ----- 모바일 화면 ----- */
-    @media (max-width: 760px) {
-      .nav ul { display: none; }
-      .hero { grid-template-columns: 1fr; padding: 56px 0; gap: 36px; }
-      .flow { grid-template-columns: 1fr; gap: 32px; }
-      .flow li::after { display: none; }
-      .features li { grid-template-columns: 1fr; gap: 4px; }
-      section.block { padding: 56px 0; }
+    /* ----- 작동 원리 ----- */
+    .steps { list-style: none; counter-reset: step; }
+    .step .top { display: flex; justify-content: space-between; align-items: center; }
+    .step .no { font-size: 28px; font-weight: 800; color: var(--accent); letter-spacing: -0.02em; }
+    .step .icon-box { background: var(--surface-mid); color: var(--primary); width: 40px; height: 40px; }
+    .step h3 { margin-top: 20px; font-size: 18px; font-weight: 700; color: var(--primary); }
+    .step p { margin-top: 8px; color: var(--muted); font-size: 14px; }
+
+    .rules { margin-top: 40px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; }
+    .rules h3 { font-size: 17px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 14px; }
+    th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+    th { background: var(--surface-mid); font-weight: 600; color: var(--muted); font-size: 13px; }
+    th:first-child { border-radius: 8px 0 0 8px; }
+    th:last-child { border-radius: 0 8px 8px 0; }
+    td:first-child { font-weight: 700; color: var(--primary); white-space: nowrap; }
+    tr:last-child td { border-bottom: 0; }
+    .guards { list-style: none; margin-top: 16px; display: grid; gap: 12px; }
+    .guards li { display: flex; gap: 10px; font-size: 14px; color: var(--muted); }
+    .guards .icon { width: 18px; height: 18px; color: var(--cyan); flex: none; margin-top: 2px; }
+    .guards b { color: var(--ink); font-weight: 600; }
+    .small-note { margin-top: 16px; font-size: 12px; color: var(--faint); }
+
+    /* ----- 신뢰성 ----- */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .feature { padding: 36px; }
+    .feature h3 { margin-top: 20px; font-size: 20px; font-weight: 700; color: var(--primary); }
+    .feature p { margin-top: 10px; color: var(--muted); }
+    .feature .proof { margin-top: 20px; font-size: 13px; font-weight: 600; color: var(--accent-ink); display: flex; gap: 6px; align-items: center; }
+    .feature .proof .icon { width: 16px; height: 16px; }
+
+    /* ----- 핵심 수치 ----- */
+    .metrics-band { background: var(--tint); padding: 72px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .metric { text-align: center; padding: 36px 24px; }
+    .metric b { display: block; font-size: 48px; font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; color: var(--primary); }
+    .metric b.hot { color: var(--accent); }
+    .metric strong { display: block; margin-top: 10px; font-size: 15px; color: var(--accent-ink); }
+    .metric span { display: block; margin-top: 6px; font-size: 13px; color: var(--muted); }
+
+    /* ----- 적용 공간 ----- */
+    .space { padding: 0; overflow: hidden; }
+    .space .visual {
+      height: 180px; position: relative; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--primary) 0%, #24507d 100%); color: #fff;
+    }
+    .space .visual.v2 { background: linear-gradient(135deg, #0b3a5c 0%, var(--cyan) 100%); }
+    .space .visual.v3 { background: linear-gradient(135deg, #7a2a05 0%, var(--accent) 100%); }
+    .space .visual .icon { width: 56px; height: 56px; stroke-width: 1.2; opacity: .9; }
+    .space .visual .tag { position: absolute; left: 16px; bottom: 16px; background: rgba(255,255,255,.92); color: var(--primary); }
+    .space .body { padding: 24px 28px 28px; }
+    .space h3 { font-size: 19px; font-weight: 700; color: var(--primary); }
+    .space p { margin-top: 8px; font-size: 14px; color: var(--muted); }
+    .space .meta {
+      margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line);
+      display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted);
+    }
+    .space .meta b { color: var(--accent-ink); }
+
+    /* ----- ROI ----- */
+    .roi { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+    .roi-hero { background: var(--primary); color: #fff; border: 0; }
+    .roi-hero:hover { transform: none; }
+    .roi-hero .pill { background: rgba(255,255,255,.12); color: #fff; }
+    .roi-hero .kpis { margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .roi-hero .kpis span { display: block; font-size: 13px; color: #a9bdd6; }
+    .roi-hero .kpis b { display: block; margin-top: 4px; font-size: 36px; font-weight: 800; letter-spacing: -0.03em; }
+    .roi-hero .kpis b.hot { color: #ffb599; }
+    .roi-hero .verdict {
+      margin-top: 28px; padding: 16px 18px; border-radius: 12px; background: rgba(255,255,255,.08);
+      font-size: 14px; color: #dce7f5;
+    }
+    .roi-hero .verdict strong { color: #fff; }
+    .ledger { list-style: none; margin-top: 8px; }
+    .ledger li { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+    .ledger li b { color: var(--ink); font-weight: 600; }
+    .ledger li.total { border-bottom: 0; }
+    .ledger li.total span, .ledger li.total b { color: var(--primary); font-weight: 800; font-size: 16px; }
+    .bar { margin-top: 8px; height: 8px; border-radius: 999px; background: var(--surface-mid); overflow: hidden; }
+    .bar i { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+    .sens { margin-top: 20px; list-style: none; display: grid; gap: 14px; }
+    .sens .row { display: flex; justify-content: space-between; font-size: 14px; }
+    .sens .row span { color: var(--muted); }
+    .sens .row b { color: var(--primary); }
+    .sens .fail i { background: var(--faint); }
+
+    /* ----- 기술 사양 ----- */
+    .specs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: #fff; }
+    .spec { padding: 24px 28px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .spec:nth-child(3n) { border-right: 0; }
+    .spec:nth-last-child(-n+3) { border-bottom: 0; }
+    .spec dt { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: var(--accent); }
+    .spec dd { margin-top: 6px; font-size: 15px; font-weight: 600; color: var(--primary); }
+    .spec dd small { display: block; margin-top: 4px; font-size: 13px; font-weight: 400; color: var(--muted); }
+    .scope { margin-top: 24px; }
+    .scope h3 { font-size: 16px; font-weight: 700; color: var(--primary); display: flex; gap: 8px; align-items: center; }
+    .scope ul { list-style: none; margin-top: 14px; display: grid; gap: 8px; font-size: 14px; color: var(--muted); }
+    .scope li { display: flex; gap: 8px; }
+    .scope li::before { content: "–"; color: var(--faint); }
+
+    /* ----- 문의 ----- */
+    .contact { display: grid; grid-template-columns: 1fr 1.1fr; gap: 56px; align-items: start; }
+    .contact h2 { margin-top: 12px; font-size: 40px; font-weight: 800; line-height: 1.25; letter-spacing: -0.02em; color: var(--primary); }
+    .contact .lead { margin-top: 16px; font-size: 17px; color: var(--muted); }
+    .offer {
+      margin-top: 32px; display: flex; gap: 16px; align-items: flex-start;
+      background: var(--accent-soft); border-radius: 16px; padding: 20px 22px;
+    }
+    .offer .icon-box { background: var(--accent); color: #fff; flex: none; }
+    .offer strong { display: block; color: var(--primary); font-size: 16px; }
+    .offer p { margin-top: 4px; font-size: 14px; color: var(--muted); }
+    form { padding: 36px; }
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .field { display: grid; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { font-size: 13px; font-weight: 600; color: var(--primary); }
+    .field input, .field select, .field textarea {
+      height: 44px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: 8px;
+      background: #fff; color: var(--ink); font: inherit; font-size: 14px; width: 100%;
+    }
+    .field textarea { height: 110px; padding: 12px 14px; resize: vertical; }
+    .field ::placeholder { color: var(--faint); }
+    .agree { margin-top: 18px; display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+    form .btn { width: 100%; justify-content: center; margin-top: 20px; padding: 14px; }
+    .form-msg { margin-top: 12px; font-size: 13px; color: var(--cyan-ink); text-align: center; min-height: 1.2em; }
+
+    /* ----- 하단 ----- */
+    footer { border-top: 1px solid var(--line); padding: 48px 0 40px; font-size: 13px; color: var(--muted); }
+    .foot { display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+    .foot p { margin-top: 12px; max-width: 32em; }
+    .foot nav { display: flex; gap: 48px; }
+    .foot nav strong { display: block; font-size: 12px; letter-spacing: 0.06em; color: var(--primary); margin-bottom: 10px; }
+    .foot nav a { display: block; margin-top: 6px; }
+    .foot nav a:hover { color: var(--primary); }
+    .copy { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; color: var(--faint); font-size: 12px; }
+
+    /* ----- 태블릿 ----- */
+    @media (max-width: 1100px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .hero { grid-template-columns: 1fr; gap: 48px; }
+      .hero h1 { font-size: 48px; }
+      .rules, .roi, .contact { grid-template-columns: 1fr; }
+      .specs { grid-template-columns: repeat(2, 1fr); }
+      .spec:nth-child(3n) { border-right: 1px solid var(--line); }
+      .spec:nth-child(2n) { border-right: 0; }
+      .spec:nth-last-child(-n+3) { border-bottom: 1px solid var(--line); }
+      .spec:nth-last-child(-n+2) { border-bottom: 0; }
+    }
+
+    /* ----- 모바일 ----- */
+    @media (max-width: 767px) {
+      .wrap { padding: 0 16px; }
+      .nav ul, .nav .btn { display: none; }
+      .hero { padding: 56px 16px 72px; }
+      .hero h1 { font-size: 36px; }
+      .hero .tagline { font-size: 16px; }
+      .readouts { grid-template-columns: 1fr 1fr; }
+      .readout:last-child { grid-column: 1 / -1; }
+      section.block { padding: 72px 0; }
+      .sec-head h2, .contact h2 { font-size: 28px; }
+      .sec-head p, .contact .lead { font-size: 15px; }
+      .grid-4, .grid-3, .grid-2, .fields { grid-template-columns: 1fr; }
+      .why-ai { grid-template-columns: 1fr; padding: 28px; }
+      .feature, form { padding: 24px; }
+      .metric b { font-size: 40px; }
+      .specs { grid-template-columns: 1fr; }
+      .spec, .spec:nth-child(3n) { border-right: 0; border-bottom: 1px solid var(--line); }
+      .spec:nth-last-child(-n+3) { border-bottom: 1px solid var(--line); }
+      .spec:last-child { border-bottom: 0; }
+      .room .fov { border-left-width: 110px; border-right-width: 110px; }
+      table { font-size: 13px; }
+      th, td { padding: 10px; }
+      .foot nav { gap: 32px; }
     }
   </style>
 </head>
 <body>
 
+  <!-- 아이콘 모음: <svg class="icon"><use href="#i-이름"/></svg> 로 사용 -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M4.5 6.5l15 11M19.5 6.5l-15 11M9 4l3 2 3-2M9 20l3-2 3 2"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.1A9.7 9.7 0 0 1 12 6c5 0 9 6 9 6a17 17 0 0 1-2.6 3.2M6.1 7.6C4 9.2 3 12 3 12s4 6 9 6c1.4 0 2.7-.4 3.9-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 9.5 4.3 4.3 0 0 0 7 18z"/><path d="M9 14h.01M12 14h.01M15 14h.01"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11M11 10V4.5a1.5 1.5 0 0 1 3 0V11M14 10.5V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-.5a6 6 0 0 1-5-2.7L3 15.5a1.5 1.5 0 0 1 2.5-1.7L8 16"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14a6.5 6.5 0 0 1 3.5 6"/></symbol>
+    <symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+    <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/><path d="M12 9v7"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 6-6"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M3 3l18 18M8.5 16.4a5 5 0 0 1 7 0M5 12.9a10 10 0 0 1 5.2-2.7M19 12.9a10 10 0 0 0-2.3-1.6M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8A15 15 0 0 0 11 5.1M12 20h.01"/></symbol>
+    <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 2v6M15 2v6M6 8h12v3a6 6 0 0 1-12 0V8zM12 17v5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+    <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h2a2 2 0 0 1 2 2v10M2 21h20M8 7h4M8 11h4M8 15h4"/></symbol>
+    <symbol id="i-school" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5L2 9z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5M22 9v6"/></symbol>
+    <symbol id="i-landmark" viewBox="0 0 24 24"><path d="M3 21h18M5 21V10M9 21V10M15 21V10M19 21V10M2 10l10-6 10 6H2z"/></symbol>
+    <symbol id="i-won" viewBox="0 0 24 24"><path d="M3 6l4 12 5-12 5 12 4-12M2 10h20M2 14h20"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7 15h10"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></symbol>
+  </svg>
+
   <!-- ===== 상단 메뉴 ===== -->
   <header>
-    <nav class="wrap nav">
-      <a class="logo" href="#">[제품 이름]</a>
+    <nav class="wrap nav" aria-label="주 메뉴">
+      <a class="logo" href="#">
+        <span class="logo-mark"><svg class="icon"><use href="#i-snow"/></svg></span>
+        OccuCool
+      </a>
       <ul>
-        <li><a href="#problem">문제</a></li>
-        <li><a href="#how">작동 방식</a></li>
-        <li><a href="#features">기능</a></li>
+        <li><a href="#problem">제품 소개</a></li>
+        <li><a href="#how">작동 원리</a></li>
+        <li><a href="#impact">기대 효과</a></li>
+        <li><a href="#specs">기술 사양</a></li>
+        <li><a href="#contact">문의</a></li>
       </ul>
+      <a class="btn btn-primary btn-sm" href="#contact">도입 문의하기</a>
     </nav>
   </header>
 
   <main>
-    <!-- ===== 첫 화면: 제품 이름과 한 줄 소개 ===== -->
-    <div class="wrap hero">
-      <div>
-        <h1>[제품 이름]</h1>
-        <p class="tagline">[제품을 한 문장으로 소개해 주세요. 누구에게 어떤 도움을 주는지 쓰면 좋습니다.]</p>
-        <a class="button" href="#how">작동 방식 보기</a>
-      </div>
+    <!-- ===== 첫 화면 ===== -->
+    <div class="hero-bg">
+      <div class="wrap hero">
+        <div>
+          <span class="pill pill-warm"><span class="live-dot"></span>온디바이스 엣지 AI 냉난방 컨트롤러</span>
+          <h1>사람이 있을 때만,<br><em>딱 필요한 만큼</em></h1>
+          <p class="tagline">OccuCool(오큐쿨)은 카메라 AI가 공간의 인원수를 세고 에어컨을 자동으로 조절합니다. 영상은 기기 안에서만 처리하고, 밖으로는 인원수 숫자만 보냅니다.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="#contact">도입 문의하기 <span aria-hidden="true">→</span></a>
+            <a class="btn btn-ghost" href="#how">작동 원리 보기</a>
+          </div>
+          <ul class="trust">
+            <li><svg class="icon"><use href="#i-chip"/></svg>100% 온디바이스 추론</li>
+            <li><svg class="icon"><use href="#i-shield"/></svg>영상 저장·전송 없음</li>
+            <li><svg class="icon"><use href="#i-plug"/></svg>IR · Modbus · BACnet 연동</li>
+          </ul>
+        </div>
 
-      <div class="product-shot">
-        <div class="frame">
-          <!-- 이미지를 넣으려면 아래 문구를 지우고 이렇게 바꾸세요:
-               <img src="images/product.png" alt="제품 사진 설명"> -->
-          <span>제품 이미지 자리<br>images 폴더에 사진을 넣어 주세요</span>
+        <!-- 대시보드 미리보기 (실제 사진이 생기면 images 폴더에 넣고 교체해도 됩니다) -->
+        <div class="device-panel" role="img" aria-label="OccuCool 대시보드 예시: 재실 8명 감지, 실내 25.0도, 냉방 설정 25도로 자동 조정">
+          <div class="room">
+            <div class="fov"></div>
+            <div class="ceiling-node">
+              <div class="lens"></div>
+              <span class="node-tag"><span class="live-dot"></span>OccuCool Edge Node #01</span>
+            </div>
+            <div class="people">
+              <span class="person box"></span><span class="person box"></span><span class="person box"></span><span class="person box"></span>
+              <span class="person box"></span><span class="person box"></span><span class="person box"></span><span class="person box"></span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-head">
+              <strong><span class="live-dot"></span>실시간 재실 기반 자동 제어 중</strong>
+              <span class="pill pill-cool num">응답 3.8s</span>
+            </div>
+            <div class="readouts">
+              <div class="readout"><span>현재 재실</span><b class="num">8명 감지</b></div>
+              <div class="readout"><span>실내 온도</span><b class="num hot">25.0°C</b></div>
+              <div class="readout"><span>냉방 설정</span><b class="num">25°C · 풍량↑</b></div>
+            </div>
+            <div class="panel-foot">
+              <span>6~10명 구간 → 기본 26°C에서 −1°C 조정</span>
+              <span class="saving num">−15% <small style="font-weight:500;color:var(--muted);font-size:12px">목표 절감</small></span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -168,64 +494,382 @@
     <!-- ===== 해결하려는 문제 ===== -->
     <section class="block" id="problem">
       <div class="wrap">
-        <h2>[어떤 문제를 해결하나요?]</h2>
-        <p class="lead">[사용자가 겪는 불편이나 문제를 2~3문장으로 설명해 주세요. 내 제품이 왜 필요한지가 드러나면 좋습니다.]</p>
+        <div class="sec-head">
+          <span class="eyebrow">Inefficiency in HVAC</span>
+          <h2>이런 낭비, 아직도 겪고 계신가요?</h2>
+          <p>사무실·학교·공공시설은 냉난방을 고정 스케줄이나 수동 조작으로 운영합니다. 빈 공간에서도 에어컨이 돌고, 인원이 갑자기 늘면 덥다는 민원이 쌓입니다.</p>
+        </div>
+
+        <div class="grid-4">
+          <article class="card problem">
+            <div class="icon-box"><svg class="icon"><use href="#i-clock"/></svg></div>
+            <span class="pill pill-warm">실제 재실과 무관</span>
+            <h3>고정 스케줄 타이머</h3>
+            <p>정해진 시간에만 켜고 끕니다. 초과근무나 휴일 근무, 회의실이 비는 시간을 반영하지 못합니다.</p>
+            <div class="note"><svg class="icon"><use href="#i-alert"/></svg>근무시간 중 공실 비율 20~30% (가정)</div>
+          </article>
+          <article class="card problem">
+            <div class="icon-box"><svg class="icon"><use href="#i-eye-off"/></svg></div>
+            <span class="pill pill-warm">정지 상태 오판</span>
+            <h3>PIR 모션센서</h3>
+            <p>움직임만 감지해서 가만히 앉아 일하면 공실로 판단합니다. 몇 명이 있는지는 알 수 없습니다.</p>
+            <div class="note"><svg class="icon"><use href="#i-alert"/></svg>회의 중 에어컨 꺼짐 민원 발생</div>
+          </article>
+          <article class="card problem">
+            <div class="icon-box"><svg class="icon"><use href="#i-cloud"/></svg></div>
+            <span class="pill pill-warm">수 분 이상 지연</span>
+            <h3>CO₂ 센서</h3>
+            <p>인원이 바뀐 뒤 수 분에서 십수 분 늦게 반응하고, 환기 상태에 따라 수치가 달라져 인원 추정이 부정확합니다.</p>
+            <div class="note"><svg class="icon"><use href="#i-alert"/></svg>점심·회의 후 급변에 대응 불가</div>
+          </article>
+          <article class="card problem">
+            <div class="icon-box"><svg class="icon"><use href="#i-hand"/></svg></div>
+            <span class="pill pill-warm">담당자 의존</span>
+            <h3>수동 조작</h3>
+            <p>담당자가 일일이 켜고 끄고 온도를 바꿔야 합니다. 퇴근 후 끄는 것을 놓치기 쉽습니다.</p>
+            <div class="note"><svg class="icon"><use href="#i-alert"/></svg>야간·주말 방치 가동 반복</div>
+          </article>
+        </div>
+
+        <div class="why-ai">
+          <div class="icon-box"><svg class="icon"><use href="#i-users"/></svg></div>
+          <div>
+            <h3>열부하의 원인인 '사람 수'를 직접 셉니다</h3>
+            <p>앉아 있거나 일부가 가려져도, 조명이 어두워도 사람을 세려면 규칙 기반 센서가 아닌 객체 검출 AI가 필요합니다. 인원수를 알면 성인 1인당 약 100~120W(가정)의 인체 발열을 계산에 넣어 설정온도와 풍량을 미리 조정할 수 있습니다.</p>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- ===== 작동 방식: 피지컬 AI의 감지 → 판단 → 행동 ===== -->
-    <section class="block" id="how">
+    <!-- ===== 작동 원리: 감지 → 판단 → 행동 → 확인 ===== -->
+    <section class="block alt" id="how">
       <div class="wrap">
-        <h2>이렇게 작동합니다</h2>
-        <p class="lead">[제품이 현실 세계에서 어떻게 움직이는지 간단히 소개해 주세요.]</p>
+        <div class="sec-head">
+          <span class="eyebrow">Automation Workflow</span>
+          <h2>OccuCool 작동 원리</h2>
+          <p>감지부터 제어, 결과 확인까지 4단계가 기기 안에서 자동으로 돌아갑니다.</p>
+        </div>
 
-        <ol class="flow">
-          <li>
-            <h3>감지</h3>
-            <p>[어떤 센서로 무엇을 알아차리나요?]</p>
+        <ol class="grid-4 steps">
+          <li class="card step">
+            <div class="top"><span class="no num">01</span><span class="icon-box"><svg class="icon"><use href="#i-users"/></svg></span></div>
+            <h3>인원 정밀 감지</h3>
+            <p>천장 광각 카메라가 5fps로 영상을 처리합니다. 프레임은 메모리에서 바로 지우고, 온습도는 10초마다 측정합니다.</p>
           </li>
-          <li>
-            <h3>판단</h3>
-            <p>[AI가 어떤 정보를 보고 무엇을 결정하나요?]</p>
+          <li class="card step">
+            <div class="top"><span class="no num">02</span><span class="icon-box"><svg class="icon"><use href="#i-chip"/></svg></span></div>
+            <h3>엣지 AI 분석</h3>
+            <p>기기 내 NPU에서 경량 객체 검출 모델이 인원수를 셉니다. 최근 5초 중앙값으로 깜빡임을 걸러 확정 인원을 만듭니다.</p>
           </li>
-          <li>
-            <h3>행동</h3>
-            <p>[결정에 따라 어떻게 움직이거나 반응하나요?]</p>
+          <li class="card step">
+            <div class="top"><span class="no num">03</span><span class="icon-box"><svg class="icon"><use href="#i-thermo"/></svg></span></div>
+            <h3>실시간 자동 제어</h3>
+            <p>인원수·실내온도·외기온도로 목표 설정온도와 풍량을 정하고, 5초 안에 에어컨으로 명령을 보냅니다.</p>
+          </li>
+          <li class="card step">
+            <div class="top"><span class="no num">04</span><span class="icon-box"><svg class="icon"><use href="#i-chart"/></svg></span></div>
+            <h3>확인 및 리포트</h3>
+            <p>명령 후 에어컨 상태를 다시 읽어 적용을 확인합니다. 실패하면 3회 재시도 후 알림을 보내고, 대시보드에 절감량을 기록합니다.</p>
           </li>
         </ol>
+
+        <div class="rules">
+          <div class="card">
+            <h3><svg class="icon"><use href="#i-snow"/></svg>인원별 냉방 제어 기준 <span class="pill pill-cool">v1 규칙 기반</span></h3>
+            <table>
+              <thead><tr><th scope="col">재실 인원</th><th scope="col">제어 동작</th></tr></thead>
+              <tbody class="num">
+                <tr><td>0명</td><td>유예시간 10분 후 절전 (OFF 또는 설정온도 완화)</td></tr>
+                <tr><td>1~5명</td><td>기본 설정온도 유지 (냉방 26°C)</td></tr>
+                <tr><td>6~10명</td><td>설정온도 −1°C, 풍량 증가</td></tr>
+                <tr><td>11명 이상</td><td>설정온도 −2°C, 풍량 최대</td></tr>
+              </tbody>
+            </table>
+            <p class="small-note">수치는 150㎡ 사무실 1개 구역 기준의 가정값이며, 현장에서 조정할 수 있습니다.</p>
+          </div>
+          <div class="card">
+            <h3><svg class="icon"><use href="#i-shield"/></svg>설비 보호 장치</h3>
+            <ul class="guards">
+              <li><svg class="icon"><use href="#i-check"/></svg><span><b>설정 변경 최소 5분 간격</b>으로 잦은 변경을 막습니다.</span></li>
+              <li><svg class="icon"><use href="#i-check"/></svg><span><b>±0.5°C 히스테리시스</b>로 온도 경계에서 흔들리지 않습니다.</span></li>
+              <li><svg class="icon"><use href="#i-check"/></svg><span><b>압축기 재기동 최소 3분 간격</b>을 지켜 설비 수명을 보호합니다.</span></li>
+              <li><svg class="icon"><use href="#i-check"/></svg><span><b>수동 조작 우선:</b> 사람이 직접 바꾸면 2시간 동안 그 설정을 따른 뒤 자동으로 돌아갑니다.</span></li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- ===== 주요 기능: 항목을 복사해서 늘리거나 지워도 됩니다 ===== -->
-    <section class="block" id="features">
+    <!-- ===== 신뢰성 ===== -->
+    <section class="block">
       <div class="wrap">
-        <h2>주요 기능</h2>
+        <div class="sec-head">
+          <span class="eyebrow">Enterprise Reliability</span>
+          <h2>시설 관리자가 믿고 맡기는 4가지 기능</h2>
+          <p>네트워크가 끊겨도, 센서가 가려져도 공간은 안전하게 유지됩니다.</p>
+        </div>
 
-        <ul class="features">
-          <li>
-            <h3>[기능 1]</h3>
-            <p>[기능 설명]</p>
-          </li>
-          <li>
-            <h3>[기능 2]</h3>
-            <p>[기능 설명]</p>
-          </li>
-          <li>
-            <h3>[기능 3]</h3>
-            <p>[기능 설명]</p>
-          </li>
-        </ul>
+        <div class="grid-2">
+          <article class="card feature">
+            <div class="icon-box"><svg class="icon"><use href="#i-bolt"/></svg></div>
+            <h3>5초 이내 인원 변화 감지</h3>
+            <p>사람이 들어오고 나가는 변화를 5초 안에 알아채고, 감지 후 5초 안에 에어컨으로 명령을 보냅니다. CO₂ 센서처럼 수 분씩 늦지 않습니다.</p>
+            <div class="proof"><svg class="icon"><use href="#i-check"/></svg>추론 지연 200ms 이하 · 5fps 이상</div>
+          </article>
+          <article class="card feature">
+            <div class="icon-box cool"><svg class="icon"><use href="#i-shield"/></svg></div>
+            <h3>영상 저장·외부 전송 없음</h3>
+            <p>카메라 영상은 기기 메모리에서 처리 즉시 폐기합니다. 밖으로 나가는 데이터는 구역별 인원수 숫자뿐이며, 얼굴 인식이나 개인 식별 기능은 만들지 않습니다.</p>
+            <div class="proof"><svg class="icon"><use href="#i-check"/></svg>영상 외부 전송·저장 0건 (트래픽 감사)</div>
+          </article>
+          <article class="card feature">
+            <div class="icon-box navy"><svg class="icon"><use href="#i-wifi-off"/></svg></div>
+            <h3>네트워크가 끊겨도 로컬 제어</h3>
+            <p>모든 판단이 기기 안에서 이뤄지므로 인터넷이 끊겨도 24시간 이상 제어를 계속합니다. 카메라에 이상이 생기면 직전 설정을 유지하고 운영 스케줄로 전환합니다.</p>
+            <div class="proof"><svg class="icon"><use href="#i-check"/></svg>복구 후 로그 누락 0건 · 가동률 99.5%</div>
+          </article>
+          <article class="card feature">
+            <div class="icon-box"><svg class="icon"><use href="#i-plug"/></svg></div>
+            <h3>다양한 에어컨 연동</h3>
+            <p>가정용·스플릿 에어컨은 IR 신호로, 상업용 시스템 에어컨은 RS-485 Modbus RTU·BACnet 게이트웨이로 제어합니다. 기존 설비를 바꿀 필요가 없습니다.</p>
+            <div class="proof"><svg class="icon"><use href="#i-check"/></svg>제어 성공률 99% 이상 (상태 재조회 기준)</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 핵심 수치 ===== -->
+    <div class="metrics-band" id="impact">
+      <div class="wrap grid-3">
+        <div class="card metric">
+          <b class="num">최대 15%</b>
+          <strong>연간 냉난방 에너지 절감</strong>
+          <span>도입 전 동일 조건 대비 목표치 (파일럿 10% 이상 검증)</span>
+        </div>
+        <div class="card metric">
+          <b class="num hot">5초 이내</b>
+          <strong>인원 변화 반응 속도</strong>
+          <span>인원 변화 감지 후 제어 명령 전송까지</span>
+        </div>
+        <div class="card metric">
+          <b class="num">0건</b>
+          <strong>영상 외부 전송 및 저장</strong>
+          <span>인원수 숫자만 서버로 보내는 프라이버시 설계</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 적용 공간 ===== -->
+    <section class="block">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="eyebrow">Applications</span>
+          <h2>어떤 공간에서 효과가 가장 클까요?</h2>
+          <p>재실 패턴이 불규칙하고 인원 변화가 잦은 곳일수록 절감과 쾌적함이 함께 커집니다.</p>
+        </div>
+
+        <div class="grid-3">
+          <article class="card space">
+            <div class="visual"><svg class="icon"><use href="#i-building"/></svg><span class="pill tag">오피스 · 회의실</span></div>
+            <div class="body">
+              <h3>스마트 오피스 &amp; 회의실</h3>
+              <p>출장·외근·회의로 자리가 자주 비는 사무실. 회의 시작과 함께 인원이 몰려도 미리 온도를 낮춰 쾌적함을 지킵니다.</p>
+              <div class="meta"><span>회의실 공실 시간 자동 절전</span><b>수동 조작 −50%</b></div>
+            </div>
+          </article>
+          <article class="card space">
+            <div class="visual v2"><svg class="icon"><use href="#i-school"/></svg><span class="pill tag">교육 시설</span></div>
+            <div class="body">
+              <h3>학교 &amp; 대학 강의실</h3>
+              <p>수업 시간표와 실제 출석이 다른 강의실. 빈 강의실은 끄고, 수강 인원이 많은 수업에는 풍량을 높입니다.</p>
+              <div class="meta"><span>시간표와 무관하게 실제 재실 기준</span><b>쾌적도 90% 유지</b></div>
+            </div>
+          </article>
+          <article class="card space">
+            <div class="visual v3"><svg class="icon"><use href="#i-landmark"/></svg><span class="pill tag">공공 · 지자체</span></div>
+            <div class="body">
+              <h3>공공시설 &amp; 주민센터</h3>
+              <p>방문객 수가 시간대마다 크게 달라지는 민원실. 퇴근 후 꺼짐 누락도 자동으로 막습니다.</p>
+              <div class="meta"><span>퇴실 10분 후 자동 절전</span><b>야간 방치 0건</b></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ROI ===== -->
+    <section class="block alt" id="roi">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="eyebrow">Business Value</span>
+          <h2>약 12.5개월이면 투자비를 회수합니다</h2>
+          <p>사무·공공시설 20개소, 120대 도입을 가정한 시뮬레이션입니다. 모든 수치는 가상의 값입니다.</p>
+        </div>
+
+        <div class="roi">
+          <div class="card roi-hero">
+            <span class="pill">시나리오: 20개소 × 평균 6구역 = 120대</span>
+            <div class="kpis num">
+              <div><span>연간 ROI</span><b class="hot">95.9%</b></div>
+              <div><span>투자 회수기간</span><b>12.5개월</b></div>
+              <div><span>월 순 절감액</span><b>1,330만 원</b></div>
+              <div><span>연간 순 절감액</span><b>1억 5,955만 원</b></div>
+            </div>
+            <p class="verdict"><strong>판정: 조건부 Go.</strong> 회수기간 24개월 이내(ROI 50% 이상) 기준을 충족합니다. 확대 전 3~5개소 파일럿에서 실측 절감률 10% 이상, 인원 계수 정확도 95% 이상을 검증해야 합니다.</p>
+          </div>
+
+          <div class="card">
+            <ul class="ledger num">
+              <li><span>초기 투자비 (H/W·연동·설치·AI·클라우드)</span><b>1억 6,640만 원</b></li>
+              <li><span>월 절감액 (전기료·인건비·설비 손실)</span><b>1,680만 원</b></li>
+              <li><span>월 운영비 (클라우드·유지보수·재학습 등)</span><b>350만 원</b></li>
+              <li class="total"><span>월 순 절감액</span><b>1,329.6만 원</b></li>
+            </ul>
+            <ul class="sens num">
+              <li>
+                <div class="row"><span>절감률 15% (기준)</span><b>ROI 95.9% · 12.5개월</b></div>
+                <div class="bar"><i style="width:100%"></i></div>
+              </li>
+              <li>
+                <div class="row"><span>절감률 10%</span><b>ROI 67.0% · 17.9개월</b></div>
+                <div class="bar"><i style="width:70%"></i></div>
+              </li>
+              <li class="fail">
+                <div class="row"><span>절감률 5% (기준 미달)</span><b>ROI 38.2% · 31.4개월</b></div>
+                <div class="bar"><i style="width:40%"></i></div>
+              </li>
+            </ul>
+            <p class="small-note">24개월 안에 회수하려면 절감률이 약 7% 이상이어야 합니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 기술 사양 ===== -->
+    <section class="block" id="specs">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="eyebrow">Technical Specifications</span>
+          <h2>기술 사양</h2>
+          <p>저전력 ARM 기반 SoC에서 영상 추론을, 실시간 MCU에서 제어를 나눠 맡습니다.</p>
+        </div>
+
+        <dl class="specs">
+          <div class="spec"><dt>카메라</dt><dd>2MP MIPI-CSI 광각 RGB<small>FOV 110~130°, 저조도 IR 겸용</small></dd></div>
+          <div class="spec"><dt>센서</dt><dd>온습도 SHT4x (I²C)<small>선택: CO₂ SCD4x, ToF·열화상 대안</small></dd></div>
+          <div class="spec"><dt>SoC / MCU</dt><dd>Cortex-A + NPU 2.3TOPS<small>예: NXP i.MX 8M Plus + Cortex-M 제어 MCU</small></dd></div>
+          <div class="spec"><dt>AI 모델</dt><dd>YOLOv8n급 경량 객체 검출<small>입력 320×320, INT8 양자화, 5~10MB</small></dd></div>
+          <div class="spec"><dt>추론 런타임</dt><dd>TensorFlow Lite / ONNX Runtime<small>NPU 델리게이트 가속</small></dd></div>
+          <div class="spec"><dt>에어컨 연동</dt><dd>IR 38kHz · Modbus RTU · BACnet<small>제조사 Wi-Fi API는 차기 지원</small></dd></div>
+          <div class="spec"><dt>통신</dt><dd>BLE 5.4 · Wi-Fi / PoE<small>MQTT over TLS, 장치별 X.509 인증서</small></dd></div>
+          <div class="spec"><dt>서버 · DB</dt><dd>AWS IoT Core · TimescaleDB<small>인원·온습도·제어 이력만 저장 (영상 제외)</small></dd></div>
+          <div class="spec"><dt>앱 · 대시보드</dt><dd>Android/iOS 앱 · React 웹<small>푸시·이메일·Slack 알림, 서명된 OTA</small></dd></div>
+        </dl>
+
+        <div class="grid-2 scope">
+          <div class="card">
+            <h3><svg class="icon" style="color:var(--green)"><use href="#i-check"/></svg>v1에서 만드는 것</h3>
+            <ul>
+              <li>구역별 실시간 인원 계수와 에어컨 자동 제어 (전원·온도·풍량·제습)</li>
+              <li>네트워크 단절 시 로컬 제어, 센서 이상 시 안전 모드</li>
+              <li>웹 관리자 페이지, 알림, 에너지 절감 리포트</li>
+              <li>설치·BLE 페어링용 모바일 앱 (설치 시간 대당 약 30분)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3><svg class="icon" style="color:var(--faint)"><use href="#i-x"/></svg>만들지 않는 것</h3>
+            <ul>
+              <li>개인 식별, 얼굴 인식, 행동 분석</li>
+              <li>영상 저장 및 원격 스트리밍</li>
+              <li>음성 제어, 조명·환기 제어, 건물 전체 BEMS 통합</li>
+              <li>고천장·대공간(공장 등) 대응 — 차기 버전 검토</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 문의 ===== -->
+    <section class="block alt" id="contact">
+      <div class="wrap contact">
+        <div>
+          <span class="eyebrow">Consulting &amp; Simulation</span>
+          <h2>우리 공간에 맞는 에너지 절감 플랜을 확인해 보세요</h2>
+          <p class="lead">건물 용도와 구역 수를 알려주시면 예상 절감률과 투자 회수기간을 시뮬레이션해 드립니다.</p>
+          <div class="offer">
+            <span class="icon-box"><svg class="icon"><use href="#i-flask"/></svg></span>
+            <div>
+              <strong>3~5개소 파일럿으로 먼저 검증합니다</strong>
+              <p>실측 절감률 10% 이상, 인원 계수 정확도 95% 이상을 확인한 뒤 확대 도입을 권장합니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 과제용 데모 폼: 실제로 전송되지는 않습니다 -->
+        <form class="card" id="contact-form">
+          <div class="fields">
+            <div class="field"><label for="f-org">회사명 / 기관명</label><input id="f-org" required placeholder="예: OO초등학교"></div>
+            <div class="field"><label for="f-name">담당자명</label><input id="f-name" required placeholder="홍길동"></div>
+            <div class="field"><label for="f-mail">이메일</label><input id="f-mail" type="email" required placeholder="name@example.com"></div>
+            <div class="field"><label for="f-zones">도입 예정 구역 수</label><input id="f-zones" type="number" min="1" placeholder="예: 6"></div>
+            <div class="field full">
+              <label for="f-type">에어컨 종류</label>
+              <select id="f-type">
+                <option>시스템 에어컨 (Modbus / BACnet)</option>
+                <option>벽걸이·스탠드형 (IR 리모컨)</option>
+                <option>잘 모르겠어요</option>
+              </select>
+            </div>
+            <div class="field full"><label for="f-msg">문의 내용</label><textarea id="f-msg" placeholder="공간 용도, 평소 재실 인원, 현재 운영 방식 등을 적어 주세요."></textarea></div>
+          </div>
+          <label class="agree"><input type="checkbox" required> (필수) 개인정보 수집 및 이용에 동의합니다.</label>
+          <button class="btn btn-primary" type="submit">무료 절감 시뮬레이션 요청하기 <span aria-hidden="true">→</span></button>
+          <p class="form-msg" id="form-msg" role="status"></p>
+        </form>
       </div>
     </section>
   </main>
 
-  <!-- ===== 하단: 만든 사람 정보 ===== -->
+  <!-- ===== 하단 ===== -->
   <footer>
     <div class="wrap">
-      <span>만든 사람: [이름]</span>
-      <span>나만의 피지컬 AI 제품 기획 과제</span>
+      <div class="foot">
+        <div>
+          <a class="logo" href="#">
+            <span class="logo-mark"><svg class="icon"><use href="#i-snow"/></svg></span>
+            OccuCool
+          </a>
+          <p>재실 인원 기반 냉난방 자동 제어 엣지 AI 컨트롤러.<br>만든 사람: [이름] · 나만의 피지컬 AI 제품 기획 과제</p>
+        </div>
+        <nav aria-label="하단 메뉴">
+          <div>
+            <strong>QUICK LINKS</strong>
+            <a href="#problem">제품 소개</a>
+            <a href="#how">작동 원리</a>
+            <a href="#impact">기대 효과</a>
+            <a href="#specs">기술 사양</a>
+          </div>
+          <div>
+            <strong>MORE</strong>
+            <a href="#roi">ROI 분석</a>
+            <a href="#contact">도입 문의</a>
+          </div>
+        </nav>
+      </div>
+      <div class="copy">
+        <span>© 2026 OccuCool. 과제용 가상 제품이며, 모든 수치는 가정값입니다.</span>
+        <span>Edge AI · Privacy by Design</span>
+      </div>
     </div>
   </footer>
 
+  <script>
+    // 과제용 데모: 실제 전송 대신 안내 문구만 보여줍니다
+    document.getElementById('contact-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      document.getElementById('form-msg').textContent = '요청이 접수되었습니다. (과제용 데모 페이지라 실제로 전송되지는 않습니다)';
+      this.reset();
+    });
+  </script>
 </body>
 </html>
