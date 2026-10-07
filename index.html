@@ -258,6 +258,19 @@
     .risks .fix { font-size: 14px; color: var(--sub); border-left: 2px solid var(--cool-deep); padding-left: 16px; }
     .risks .fix b { display: block; font-size: 12px; letter-spacing: .08em; color: var(--cool-deep); margin-bottom: 4px; }
 
+    /* ----- 후처리 ----- */
+    .gaps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; list-style: none; counter-reset: g; }
+    .gaps li { counter-increment: g; padding: 24px; border-radius: var(--radius); background: #fff; border: 1px solid var(--line); }
+    .gaps li::before { content: "0" counter(g); display: block; font-size: 13px; font-weight: 700; color: var(--warm); letter-spacing: .08em; }
+    .gaps h3 { margin-top: 10px; font-size: 17px; letter-spacing: -.02em; }
+    .gaps p { margin-top: 6px; font-size: 14px; color: var(--sub); }
+    .code.old { background: var(--paper-2); color: var(--mute); }
+    .branch ol li.old { color: var(--mute); }
+    .legend { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--mute); }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .tech-list .metric { display: block; margin-top: 4px; font-size: 13px; color: var(--cool-deep); font-weight: 600; }
+    #postprocess .tech-list { background: #fff; border-radius: 0 0 var(--radius) var(--radius); padding: 0 24px; }
+
     /* ----- 하루 시나리오 ----- */
     .timeline { list-style: none; position: relative; margin-left: 8px; }
     .timeline::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 1px; background: var(--night-line); }
@@ -348,8 +361,8 @@
 
     /* ----- 로드맵 ----- */
     .roadmap { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .roadmap li { padding: 28px; border-radius: var(--radius); border: 1px solid var(--line); background: #fff; }
-    .roadmap li.now { border-color: var(--ink); box-shadow: inset 0 3px 0 var(--cool-deep); }
+    .roadmap > li { padding: 28px; border-radius: var(--radius); border: 1px solid var(--line); background: #fff; }
+    .roadmap > li.now { border-color: var(--ink); box-shadow: inset 0 3px 0 var(--cool-deep); }
     .roadmap small { font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--cool-deep); }
     .roadmap h3 { margin-top: 8px; font-size: 20px; letter-spacing: -.02em; }
     .roadmap ul { margin-top: 14px; padding-left: 18px; color: var(--sub); font-size: 15px; display: grid; gap: 6px; }
@@ -379,6 +392,7 @@
     @media (max-width: 1080px) {
       .hero .wrap, .scenario, .privacy, .roi, .rules, .premise { grid-template-columns: 1fr; }
       .tech-list li { grid-template-columns: 240px 1fr; }
+      .gaps { grid-template-columns: repeat(2, 1fr); }
       .risks li { grid-template-columns: 48px 1fr; }
       .risks .fix { grid-column: 2; }
       .scenario aside { position: static; }
@@ -427,6 +441,8 @@
       .order { grid-template-columns: 1fr; }
       .risks li { grid-template-columns: 1fr; gap: 8px; padding: 20px; }
       .risks .fix { grid-column: auto; }
+      .gaps { grid-template-columns: 1fr; }
+      #postprocess .tech-list { padding: 0 16px; }
     }
   </style>
 </head>
@@ -451,6 +467,7 @@
         <li><a href="#problem">문제</a></li>
         <li><a href="#how">작동 방식</a></li>
         <li><a href="#preprocess">전처리</a></li>
+        <li><a href="#postprocess">후처리</a></li>
         <li><a href="#privacy">프라이버시</a></li>
         <li><a href="#metrics">성능 지표</a></li>
         <li><a href="#roi">ROI</a></li>
@@ -775,6 +792,116 @@
       </div>
     </section>
 
+    <!-- ===== 후처리 (report/postprocess_report.md 요약) ===== -->
+    <section class="gray" id="postprocess">
+      <div class="wrap">
+        <div class="head-row reveal">
+          <div>
+            <span class="kicker">Postprocessing</span>
+            <h2 class="title">판단을 믿을 수 있을 때만<br>에어컨을 움직입니다</h2>
+          </div>
+          <p class="intro">후처리는 모델이 결과를 낸 뒤부터 데이터가 서버에 닿기까지의 모든 단계입니다. 전처리가 입력을 깨끗하게 만든다면, 후처리는 <b>그 결과를 믿어도 되는지 확인하고 서비스로 전달</b>합니다.</p>
+        </div>
+
+        <!-- 메워야 할 공백 -->
+        <ol class="gaps">
+          <li class="reveal"><h3>'0명'을 검증하지 않음</h3><p>렌즈가 가려지거나 앉은 사람의 신뢰도가 낮아지면 그대로 공실이 되어 에어컨이 꺼집니다.</p></li>
+          <li class="reveal"><h3>PRD 제어 약속 미충족</h3><p>풍량 제어, 감지 후 5초 이내 명령, 시간당 설정 변경 4회 이하가 아직 보장되지 않습니다.</p></li>
+          <li class="reveal"><h3>서비스 전달 경로 부재</h3><p>알림 중복 억제, 오프라인 버퍼링, 외부 전송 데이터 검사가 없습니다.</p></li>
+          <li class="reveal"><h3>Go 판정 지표 미산출</h3><p>파일럿 판정에 필요한 지표 중 에너지 절감률만 계산됩니다.</p></li>
+        </ol>
+
+        <!-- 파이프라인 -->
+        <h3 class="sub-head reveal"><small>후처리 파이프라인</small>네 계층, 14단계로 메웁니다</h3>
+        <div class="branches reveal">
+          <div class="branch"><b>검출<small>Detection</small></b><ol><li class="old"><span class="code old">V3</span>검출</li><li><span class="code">D1</span>영상 건전성</li><li class="old"><span class="code old">V4</span>박스 필터</li><li><span class="code">D3</span>기하 분기</li><li><span class="code">D4</span>정적 오검출 맵</li><li><span class="code">D5</span>타일 병합</li><li><span class="code">D2</span>저신뢰 연계</li><li class="old"><span class="code old">V5</span>추적</li></ol></div>
+          <div class="branch"><b>재실<small>Occupancy</small></b><ol><li class="old"><span class="code old">V9</span>상태 머신</li><li><span class="code">C1</span>공실 확정 게이트</li><li class="old"><span class="code old">M1~M3</span>통합·집계</li></ol></div>
+          <div class="branch"><b>제어<small>Control</small></b><ol><li><span class="code">K1</span>설정온도·풍량 매핑</li><li><span class="code">K2</span>즉시 제어</li><li class="old"><span class="code old">P1</span>출력 보호</li><li><span class="code">G1</span>변경 빈도 제한</li><li class="old"><span class="code old">A2</span>명령 확인</li></ol></div>
+          <div class="branch merge"><b>서비스<small>Edge → Cloud</small></b><ol><li><span class="code">N1</span>알림 정리</li><li><span class="code">L1</span>외부 전송 검사</li><li><span class="code">N2</span>오프라인 버퍼</li><li><span class="code">L2</span>KPI 산출</li><li><span class="code">L3</span>오작동 의심 추출</li><li><span class="code">L4</span>월간 리포트</li></ol></div>
+        </div>
+        <p class="legend reveal"><span><span class="code">D1</span>새로 추가</span><span><span class="code old">V4</span>기존 단계</span></p>
+
+        <!-- 단계별 기능 -->
+        <h3 class="sub-head reveal"><small>단계별 기능과 근거</small>무엇을 더하고, 왜 필요한가</h3>
+        <div class="reveal">
+          <div class="tabs" role="tablist" aria-label="후처리 계층">
+            <button role="tab" id="ptab-det" aria-controls="pq-det" aria-selected="true">검출</button>
+            <button role="tab" id="ptab-occ" aria-controls="pq-occ" aria-selected="false" tabindex="-1">재실</button>
+            <button role="tab" id="ptab-ctl" aria-controls="pq-ctl" aria-selected="false" tabindex="-1">제어</button>
+            <button role="tab" id="ptab-svc" aria-controls="pq-svc" aria-selected="false" tabindex="-1">서비스</button>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="pq-det" aria-labelledby="ptab-det">
+            <ul class="tech-list">
+              <li><h4><span class="code">D1</span>영상 건전성 판정 <span class="lv must">1차 필수</span></h4><p>프레임을 버리기 직전에 밝기·선명도·정지 화면·가림을 숫자로만 계산합니다. 가려진 렌즈는 결측이 아니라 '정상처럼 보이는 0명'이라 지금 구조로는 걸러지지 않습니다.<span class="metric">재실 중 절전 오작동 · 카메라 가림 알림</span></p></li>
+              <li><h4><span class="code">D2</span>저신뢰 검출 2단계 연계 <span class="lv must">1차 필수</span></h4><p>신뢰도 0.4 이상만 새 사람으로 인정하고, 0.15~0.4는 이미 확인된 사람의 트랙을 이어 가는 데만 씁니다. 앉아 있거나 일부 가려진 사람의 트랙이 끊기지 않게 합니다.<span class="metric">±1명 정확도 95% · 절전 오작동 월 1건</span></p></li>
+              <li><h4><span class="code">D3</span>설치 방식별 기하 필터 <span class="lv cond">설치 결정 즉시</span></h4><p>사선 설치는 서 있는 사람 비율과 발 위치로, 천장 직하·어안은 머리 박스와 박스 중심으로 판정합니다. 한쪽만 고정하면 다른 설치 현장에서 계수가 무너집니다.<span class="metric">±1명 정확도 95%</span></p></li>
+              <li><h4><span class="code">D4</span>정적 오검출 억제 맵 <span class="lv rec">2차</span></h4><p>비운영 시간에 같은 자리에서 반복 검출되는 외투·포스터 위치의 임계값을 높입니다. 거짓 재실이 공실 확정을 막아 절감률을 깎는 것을 방지합니다.<span class="metric">에너지 절감률 15%</span></p></li>
+              <li><h4><span class="code">D5</span>타일 경계 중복 병합 <span class="lv cond">타일 사용 시</span></h4><p>타일 경계에서 한 사람이 두 번 잡히는 경우를 작은 박스 기준 겹침 비율로 합칩니다.<span class="metric">MAE 0.5명 이하</span></p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="pq-occ" aria-labelledby="ptab-occ" hidden>
+            <ul class="tech-list">
+              <li><h4><span class="code">C1</span>공실 확정 게이트 <span class="lv must">1차 필수</span></h4><p>공실로 바꾸기 전에 영상 정상(D1), 저신뢰 흔적 없음(D2), 유령 트랙 없음, 출입구 퇴장 여부를 모두 확인합니다. 공실 판정은 되돌리는 데 최소 5분이 걸리는 비싼 판단이라, 들어갈 때보다 나갈 때 더 깐깐하게 봅니다.<span class="metric">절전 오작동 월 1건 · 퇴장 후 절전 10분</span></p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="pq-ctl" aria-labelledby="ptab-ctl" hidden>
+            <ul class="tech-list">
+              <li><h4><span class="code">K1</span>인원 구간 → 설정온도·풍량 <span class="lv rec">2차</span></h4><p>PRD 4구간(0 / 1~5 / 6~10 / 11+)과 소규모 현장 3구간을 프로필로 나누고, 풍량까지 실제로 제어합니다. 풍량은 설정온도보다 체감 반응이 빠릅니다.<span class="metric">쾌적도 유지율 90%</span></p></li>
+              <li><h4><span class="code">K2</span>이벤트 기반 즉시 제어 <span class="lv rec">2차</span></h4><p>입실, 인원 단계 상승, 안전 모드 진입은 1분 주기를 기다리지 않고 바로 판단합니다. 켜는 쪽만 빠르게, 끄는 쪽은 그대로 천천히 처리합니다.<span class="metric">감지 후 명령 5초 이내</span></p></li>
+              <li><h4><span class="code">G1</span>설정 변경 빈도 제한 <span class="lv must">1차 필수</span></h4><p>변경 후 5분 이내 재변경과 시간당 4회 초과를 막고, 걸린 명령은 최신 목표 하나만 보류합니다. 즉시 제어(K2)와 반드시 짝으로 들어갑니다.<span class="metric">설정 변경 시간당 4회 이하</span></p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="pq-svc" aria-labelledby="ptab-svc" hidden>
+            <ul class="tech-list">
+              <li><h4><span class="code">N1</span>알림 정규화·중복 억제 <span class="lv rec">2차</span></h4><p>같은 유형은 하나로 묶고, 해소되면 해제 알림을 보냅니다. 긴급(제어 실패·카메라 가림)은 푸시로, 주의는 일일 요약으로, 정보는 대시보드에만 보냅니다. 알림 피로로 중요한 경보를 놓치지 않게 합니다.<span class="metric">현장 점검 대응 · 수동 조작 50% 감소</span></p></li>
+              <li><h4><span class="code">L1</span>외부 전송 검사 <span class="lv must">1차 필수</span></h4><p>밖으로 나가는 메시지를 허용 목록 스키마(숫자·상태·시각)로 검사하고, 이미지성 데이터는 차단합니다. "영상을 안 보냈다"를 "구조적으로 보낼 수 없다"로 바꿉니다.<span class="metric">영상 외부 전송 0건</span></p></li>
+              <li><h4><span class="code">N2</span>오프라인 버퍼링·재전송 <span class="lv must">1차 필수</span></h4><p>검사를 통과한 로그에 일련번호를 붙여 기기에 먼저 저장하고, 복구되면 순서대로 다시 보냅니다. 24시간 분량이 수 MB 수준이라 부담이 없습니다.<span class="metric">24시간 오프라인 · 로그 누락 0건</span></p></li>
+              <li><h4><span class="code">L2</span>KPI 자동 산출 <span class="lv rec">2차</span></h4><p>쾌적도, 시간당 변경 횟수, 압축기 재기동 위반, 제어 성공률, 감지→명령 지연을 매일 같은 코드로 계산합니다. 보간·추정 구간은 분모에서 뺍니다.<span class="metric">파일럿 Go 조건 전체</span></p></li>
+              <li><h4><span class="code">L3</span>절전 오작동 의심 구간 추출 <span class="lv rec">2차</span></h4><p>공실 확정 후 곧 재입실하거나 수동으로 다시 켠 구간을 표시합니다. 영상을 남기지 않으므로 다음 현장 라벨링을 이 시각에 집중합니다.<span class="metric">절전 오작동 월 1건 · 분기 재학습</span></p></li>
+              <li><h4><span class="code">L4</span>월간 리포트·파라미터 제안 <span class="lv cond">3차</span></h4><p>부재 시간 분포와 수동 조작 설정값으로 유예시간·기본 온도 조정을 제안합니다. 적용은 담당자가 승인합니다.<span class="metric">월간 리포트 기반 튜닝</span></p></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 도입 순서 -->
+        <h3 class="sub-head reveal"><small>도입 순서</small>파일럿 전 6개부터 넣습니다</h3>
+        <ol class="roadmap">
+          <li class="now reveal">
+            <small>1차 · 파일럿 설치 전</small>
+            <h3>거짓 공실과 측정 공백 차단</h3>
+            <ul>
+              <li>D1 · D2 · C1: 거짓 공실을 세 겹으로 차단</li>
+              <li>G1: 설정 변경 빈도 지표 보장</li>
+              <li>L1 · N2: 전송 0건 · 누락 0건 측정 기반</li>
+              <li>D3: 설치 방식이 정해지는 즉시</li>
+            </ul>
+          </li>
+          <li class="reveal">
+            <small>2차 · 그림자 모드 1~2주</small>
+            <h3>판단 검증과 지표 정렬</h3>
+            <ul>
+              <li>K1 · K2: 명령 없이 판단만 비교 검증</li>
+              <li>N1 · L2 · L3: 알림 기준과 KPI 계산 확정</li>
+              <li>D4: 비운영 시간 데이터 누적 후 적용</li>
+            </ul>
+          </li>
+          <li class="reveal">
+            <small>3차 · 파일럿 1개월 이후</small>
+            <h3>데이터 기반 튜닝</h3>
+            <ul>
+              <li>L4: 한 달치 분포로 파라미터 제안</li>
+              <li>D5: 원거리 타일을 쓰는 현장만</li>
+            </ul>
+          </li>
+        </ol>
+        <p class="note reveal">요약 출처: 후처리 설계안 (report/postprocess_report.md). 단계별 초기값·검증 기준과 PRD·보고서·코드 간 불일치 항목은 원문에서 볼 수 있습니다.</p>
+      </div>
+    </section>
+
     <!-- ===== 하루 시나리오 ===== -->
     <section class="dark">
       <div class="wrap scenario">
@@ -1078,24 +1205,26 @@
     sim.addEventListener('input', updateSim);
     updateSim();
 
-    // ----- 전처리 탭: 데이터 소스별 기법 -----
-    const tabs = [...document.querySelectorAll('#preprocess [role=tab]')];
-    function selectTab(tab) {
-      tabs.forEach(t => {
-        const on = t === tab;
-        t.setAttribute('aria-selected', on);
-        t.tabIndex = on ? 0 : -1;
-        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
-      });
-    }
-    tabs.forEach((t, i) => {
-      t.addEventListener('click', () => selectTab(t));
-      t.addEventListener('keydown', e => {
-        const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-        if (!step) return;
-        const next = tabs[(i + step + tabs.length) % tabs.length];
-        selectTab(next);
-        next.focus();
+    // ----- 탭: 전처리(데이터 소스별), 후처리(계층별) -----
+    document.querySelectorAll('[role=tablist]').forEach(list => {
+      const tabs = [...list.querySelectorAll('[role=tab]')];
+      function selectTab(tab) {
+        tabs.forEach(t => {
+          const on = t === tab;
+          t.setAttribute('aria-selected', on);
+          t.tabIndex = on ? 0 : -1;
+          document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+        });
+      }
+      tabs.forEach((t, i) => {
+        t.addEventListener('click', () => selectTab(t));
+        t.addEventListener('keydown', e => {
+          const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+          if (!step) return;
+          const next = tabs[(i + step + tabs.length) % tabs.length];
+          selectTab(next);
+          next.focus();
+        });
       });
     });
 
