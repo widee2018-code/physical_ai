@@ -35,8 +35,9 @@ git push -u origin main --force
 git init
 git branch -M main
 git remote remove origin
-git remote add origin 
+git remote add origin https://github.com/widee2018-code/physical_ai
 git add .
 git commit -m "수정 내용에 대한 설명"
 git push -u origin main --force
+
 # physical_ai
