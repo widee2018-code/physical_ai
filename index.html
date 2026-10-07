@@ -197,6 +197,67 @@
     .guard li { display: grid; grid-template-columns: 76px 1fr; gap: 14px; font-size: 15px; color: var(--sub); }
     .guard b { font-size: 17px; color: var(--ink); font-weight: 800; letter-spacing: -.02em; }
 
+    /* ----- 전처리 ----- */
+    .premise { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .premise .panel { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: start; }
+    .premise .figure { font-size: 40px; font-weight: 800; letter-spacing: -.03em; line-height: 1; color: var(--cool-deep); }
+    .premise .figure em { font-style: normal; font-size: 18px; color: var(--sub); margin-left: 2px; }
+    .premise small { font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--mute); }
+    .premise h3 { margin-top: 4px; }
+    .premise p { margin-top: 8px; font-size: 15px; color: var(--sub); }
+    .premise p b { color: var(--ink); }
+
+    .sub-head { margin: 80px 0 24px; font-size: 22px; letter-spacing: -.02em; }
+    .sub-head small { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--mute); letter-spacing: 0; }
+
+    .tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+    .tabs button {
+      flex: none; height: 42px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--line);
+      background: #fff; color: var(--sub); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+      transition: background .2s, color .2s, border-color .2s;
+    }
+    .tabs button:hover { border-color: var(--ink); color: var(--ink); }
+    .tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .tab-panel { margin-top: 20px; }
+    .tech-list { list-style: none; border-top: 1px solid var(--ink); }
+    .tech-list li { display: grid; grid-template-columns: 300px 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+    .tech-list h4 { font-size: 16px; letter-spacing: -.01em; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .tech-list p { font-size: 15px; color: var(--sub); }
+    .code { display: inline-block; min-width: 30px; padding: 2px 7px; border-radius: 6px; background: #E0F2FE; color: var(--cool-deep); font-size: 12px; font-weight: 700; text-align: center; }
+    .lv { font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+    .lv.must { background: var(--ink); color: #fff; }
+    .lv.rec { background: #DCFCE7; color: #166534; }
+    .lv.cond { background: #FFEDD5; color: #9A3412; }
+    .lv.skip { background: var(--paper-2); color: var(--mute); text-decoration: line-through; }
+
+    .branches { display: grid; gap: 10px; }
+    .branch { display: grid; grid-template-columns: 150px 1fr; border: 1px solid var(--line); border-radius: 12px; background: #fff; overflow: hidden; }
+    .branch > b { padding: 16px 18px; font-size: 15px; border-right: 1px solid var(--line); background: var(--paper-2); }
+    .branch > b small { display: block; font-size: 12px; font-weight: 500; color: var(--mute); }
+    .branch ol { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 14px 18px; font-size: 14px; color: var(--sub); }
+    .branch ol li { display: inline-flex; align-items: center; gap: 6px; }
+    .branch ol li + li::before { content: "→"; color: var(--mute); margin-right: 2px; }
+    .branch.merge { border-color: var(--ink); }
+    .branch.merge > b { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .branch.merge > b small { color: #A5B0C2; }
+
+    .order { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; list-style: none; }
+    .order li { padding: 22px 24px; border-radius: var(--radius); border: 1px solid var(--line); background: #fff; }
+    .order .pair { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--mute); }
+    .order h4 { margin-top: 10px; font-size: 16px; letter-spacing: -.01em; }
+    .order p { margin-top: 6px; font-size: 14px; color: var(--sub); }
+
+    .miss td:first-of-type, .miss td { font-size: 14px; }
+    .miss tbody th small { display: block; font-weight: 400; font-size: 13px; color: var(--mute); }
+
+    .risks { list-style: none; counter-reset: r; display: grid; gap: 12px; }
+    .risks li { counter-increment: r; display: grid; grid-template-columns: 56px 1fr 1.3fr; gap: 24px; padding: 22px 24px; border-radius: var(--radius); background: var(--paper-2); }
+    .risks li::before { content: counter(r) "위"; font-size: 15px; font-weight: 800; color: var(--warm); }
+    .risks h4 { font-size: 16px; letter-spacing: -.01em; }
+    .risks .cause { margin-top: 4px; font-size: 14px; color: var(--sub); }
+    .risks .fix { font-size: 14px; color: var(--sub); border-left: 2px solid var(--cool-deep); padding-left: 16px; }
+    .risks .fix b { display: block; font-size: 12px; letter-spacing: .08em; color: var(--cool-deep); margin-bottom: 4px; }
+
     /* ----- 하루 시나리오 ----- */
     .timeline { list-style: none; position: relative; margin-left: 8px; }
     .timeline::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 1px; background: var(--night-line); }
@@ -316,7 +377,10 @@
 
     /* ----- 태블릿 ----- */
     @media (max-width: 1080px) {
-      .hero .wrap, .scenario, .privacy, .roi, .rules { grid-template-columns: 1fr; }
+      .hero .wrap, .scenario, .privacy, .roi, .rules, .premise { grid-template-columns: 1fr; }
+      .tech-list li { grid-template-columns: 240px 1fr; }
+      .risks li { grid-template-columns: 48px 1fr; }
+      .risks .fix { grid-column: 2; }
       .scenario aside { position: static; }
       .pipeline { grid-template-columns: repeat(2, 1fr); row-gap: 48px; }
       .kpi-grid { grid-template-columns: repeat(2, 1fr); }
@@ -354,6 +418,15 @@
       .panel, .calc { padding: 24px; }
       .calc .big b { font-size: 38px; }
       .nav .btn { display: none; }
+      .premise .panel { grid-template-columns: 1fr; gap: 12px; }
+      .sub-head { margin-top: 56px; }
+      .tech-list li { grid-template-columns: 1fr; gap: 6px; }
+      .branch { grid-template-columns: 1fr; }
+      .branch > b { border-right: 0; border-bottom: 1px solid var(--line); padding: 12px 16px; }
+      .branch ol { padding: 12px 16px; }
+      .order { grid-template-columns: 1fr; }
+      .risks li { grid-template-columns: 1fr; gap: 8px; padding: 20px; }
+      .risks .fix { grid-column: auto; }
     }
   </style>
 </head>
@@ -377,6 +450,7 @@
       <ul>
         <li><a href="#problem">문제</a></li>
         <li><a href="#how">작동 방식</a></li>
+        <li><a href="#preprocess">전처리</a></li>
         <li><a href="#privacy">프라이버시</a></li>
         <li><a href="#metrics">성능 지표</a></li>
         <li><a href="#roi">ROI</a></li>
@@ -539,6 +613,165 @@
             </ul>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ===== 전처리 (report/preprocess_report.md) ===== -->
+    <section id="preprocess">
+      <div class="wrap">
+        <div class="head-row reveal">
+          <div>
+            <span class="kicker">Preprocessing</span>
+            <h2 class="title">1명 오차가 판단을 뒤집지 않도록,<br>데이터를 먼저 다듬습니다</h2>
+          </div>
+          <p class="intro">파일럿 현장(창 없음, LED 상시 점등, 최대 5명)은 조명이 안정적이라 화질 보정은 거의 필요 없습니다. 대신 <b>시간축 안정화</b>, <b>카메라 커버리지 보완</b>, <b>센서·에어컨 상태의 신뢰성</b>에 전처리를 집중합니다.</p>
+        </div>
+
+        <!-- 설계를 바꾼 두 가지 판단 -->
+        <div class="premise">
+          <div class="panel reveal">
+            <div class="figure num">1.4<em>m</em></div>
+            <div>
+              <small>판단 1 · 커버리지</small>
+              <h3>천장 중앙 설치만으로는 부족합니다</h3>
+              <p>천장 2.4m에 90° 렌즈를 중앙에 달면 머리 높이(1.7m)에서 보이는 폭이 2×0.7m×tan45° ≈ <b>1.4m</b>뿐입니다. 100~300㎡를 1대로 덮으려면 <b>사선 설치나 어안 렌즈</b>가 사실상 필수입니다.</p>
+            </div>
+          </div>
+          <div class="panel reveal">
+            <div class="figure num">0.5<em>kW</em></div>
+            <div>
+              <small>판단 2 · 인체 발열</small>
+              <h3>절감은 '정확한 공실 판정'에서 나옵니다</h3>
+              <p>1인당 현열 70~100W라 5명이어도 0.5kW 수준으로, 수~10kW급 카세트 용량에 비해 작습니다. 그래서 인원수를 그대로 쓰지 않고 <b>재실 단계(0명 / 1~2명 / 3~5명)</b>로 묶어 제어에 넣습니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 데이터 소스별 기법과 근거 -->
+        <h3 class="sub-head reveal"><small>데이터 소스별 기법</small>무엇을, 왜 적용하는가</h3>
+        <div class="reveal">
+          <div class="tabs" role="tablist" aria-label="데이터 소스">
+            <button role="tab" id="tab-cam" aria-controls="pp-cam" aria-selected="true">카메라 영상</button>
+            <button role="tab" id="tab-count" aria-controls="pp-count" aria-selected="false" tabindex="-1">인원수 시계열</button>
+            <button role="tab" id="tab-clim" aria-controls="pp-clim" aria-selected="false" tabindex="-1">온습도</button>
+            <button role="tab" id="tab-hvac" aria-controls="pp-hvac" aria-selected="false" tabindex="-1">에어컨 상태</button>
+            <button role="tab" id="tab-out" aria-controls="pp-out" aria-selected="false" tabindex="-1">외기 · 스케줄</button>
+            <button role="tab" id="tab-energy" aria-controls="pp-energy" aria-selected="false" tabindex="-1">에너지</button>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="pp-cam" aria-labelledby="tab-cam">
+            <ul class="tech-list">
+              <li><h4><span class="code">V1</span>메모리 내 처리 · 메타데이터만 출력 <span class="lv must">필수</span></h4><p>원본 저장 불가 조건이므로 프레임은 RAM에서 추론 직후 폐기하고 박스·트랙 ID·카운트만 남깁니다.</p></li>
+              <li><h4><span class="code">V1</span>노출 · 화이트밸런스 고정 <span class="lv rec">권장</span></h4><p>조명이 일정하므로 자동 노출이 사람 출입에 반응해 밝기를 흔드는 것을 막는 편이 CLAHE보다 효과적이고 연산도 들지 않습니다.</p></li>
+              <li><h4>CLAHE · 감마 보정 · IR 분기 <span class="lv skip">불필요</span></h4><p>창 없음, 상시 점등, 야간 재실 없음이라 조도 변동 요인이 없습니다.</p></li>
+              <li><h4><span class="code">V1</span>정적 ROI 마스크 <span class="lv rec">권장</span></h4><p>천장·벽과 시야 밖 영역을 제외하면 오검출과 연산을 함께 줄일 수 있습니다.</p></li>
+              <li><h4><span class="code">V3</span>원거리 영역 타일링 <span class="lv cond">사선 설치 시 필수</span></h4><p>사선 설치에서는 먼 쪽 사람이 작게 찍히므로, 원본 해상도로 잘라 따로 추론해 작은 객체 미검출을 막습니다.</p></li>
+              <li><h4><span class="code">V4</span>신뢰도 · 최소 크기 · 종횡비 · NMS <span class="lv must">필수</span></h4><p>저밀도라 NMS는 표준값으로 충분하고, 주로 서서 이동하므로 서 있는 사람 비율의 종횡비 필터가 잘 맞습니다.</p></li>
+              <li><h4><span class="code">V5</span>경량 다중 객체 추적 <span class="lv must">필수</span></h4><p>5명 이하·가림 없음이라 IoU 기반 트래커로 충분하며, 순간 미검출을 트랙 유지로 메워 카운트를 안정화합니다.</p></li>
+              <li><h4><span class="code">V6</span>렌즈 왜곡 보정 <span class="lv rec">점만 보정</span></h4><p>90° 렌즈는 왜곡이 작으므로 전체 프레임 대신 검출된 발 위치 좌표만 보정해 연산을 아낍니다.</p></li>
+              <li><h4><span class="code">V6</span>바닥 투영(Homography) · 구역 할당 <span class="lv cond">구역 2개 이상 시 필수</span></h4><p>사선 시점에서는 박스 중심이 아닌 발 위치를 바닥 좌표로 투영해야 구역 경계 판정이 정확합니다.</p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="pp-count" aria-labelledby="tab-count" hidden>
+            <ul class="tech-list">
+              <li><h4><span class="code">V7</span>프레임 카운트 중앙값 필터</h4><p>1~2프레임 순간 미검출·오검출(스파이크)을 제거하는 데 이동평균보다 강건하고 정수 특성도 유지됩니다.</p></li>
+              <li><h4><span class="code">V7</span>Hampel 이상치 필터</h4><p>급변 이벤트가 거의 없는 현장이라 급변은 오류일 가능성이 높아 민감도를 높게 둘 수 있습니다.</p></li>
+              <li><h4><span class="code">V8</span>10초 그리드 리샘플링</h4><p>온습도 측정 주기(10초 이하)와 시간축을 맞추기 위해 구간 중앙값으로 집계합니다.</p></li>
+              <li><h4><span class="code">V9</span>재실 상태 머신 (비대칭 Debounce)</h4><p>입실은 빠르게(30초), 공실 확정은 느리게(5분) 판정해야 재실자가 있는데 에어컨이 꺼지는 최악의 오제어를 막습니다.</p></li>
+              <li><h4><span class="code">V9</span>재실 단계 이산화 + 히스테리시스</h4><p>2명↔3명 경계에서 단계가 진동해 설정온도가 반복 변경되는 것을 막습니다 (±1명 여유, 2분 유지).</p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="pp-clim" aria-labelledby="tab-clim" hidden>
+            <ul class="tech-list">
+              <li><h4><span class="code">S1</span>물리 범위 검사</h4><p>센서 고장이나 통신 오류로 들어오는 0℃, 100%RH 같은 불가능한 값을 1차로 차단합니다.</p></li>
+              <li><h4><span class="code">S2</span>변화율 제한</h4><p>밀폐되고 열원이 없는 실내에서 10초 만에 1℃ 이상 변하는 것은 물리적으로 비정상이라 스파이크로 판정합니다.</p></li>
+              <li><h4><span class="code">S2</span>Hampel 필터</h4><p>단일 센서라 교차 검증이 불가능하므로 자기 시계열 기준의 강건한 이상치 탐지가 필요합니다.</p></li>
+              <li><h4><span class="code">S3</span>결측 계층 처리 + 품질 플래그</h4><p>Wi-Fi 통신이라 짧은 누락이 생길 수 있어, 직전값 유지 → 선형 보간 → 무효 처리로 누락 길이별 처리를 달리합니다.</p></li>
+              <li><h4><span class="code">S4</span>오프셋(Bias) 보정</h4><p>천장형 카세트의 토출 기류 영향을 받기 쉬워, 기준 온도계와 24시간 비교한 편차를 보정합니다.</p></li>
+              <li><h4><span class="code">S5</span>EMA 평활화</h4><p>제어 신호에 남은 미세 잡음을 줄여 Deadband 근처에서 명령이 떨리는 것을 막습니다 (α=0.2, 시정수 약 45초).</p></li>
+              <li><h4><span class="code">S6</span>이슬점 · 절대습도 · dT/dt</h4><p>냉방 중에는 온도가 내려가며 상대습도가 저절로 오르므로, 상대습도만으로 제습을 켜면 오작동합니다. 이슬점 기준이 더 정확합니다.</p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="pp-hvac" aria-labelledby="tab-hvac" hidden>
+            <ul class="tech-list">
+              <li><h4><span class="code">A1</span>이벤트 로그 → 계단 함수 (Zero-Order Hold)</h4><p>상태는 변경 시점만 기록되므로, 다른 시계열과 합치려면 10초 그리드의 연속 상태로 펼쳐야 합니다.</p></li>
+              <li><h4><span class="code">A2</span>명령-피드백 대조</h4><p>IR 명령은 전달이 실패할 수 있어, 30초 안에 피드백 상태와 비교해 실패를 감지하고 최대 2회 재전송합니다.</p></li>
+              <li><h4><span class="code">A2</span>수동 조작 감지 · 라벨링</h4><p>명령 없이 상태가 바뀌면 사람이 조작한 것으로 보고 자동 제어를 보류하며, 그 구간을 사용자 선호 데이터로 분리 저장합니다.</p></li>
+              <li><h4><span class="code">A3</span>응답 지연(데드타임) 추정</h4><p>냉방 효과가 실내 센서에 나타나기까지의 지연을 알아야 제어 판단에서 과잉 반응을 막을 수 있습니다.</p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="pp-out" aria-labelledby="tab-out" hidden>
+            <ul class="tech-list">
+              <li><h4><span class="code">O1</span>범위 검사 · 중앙값 · 장주기 EMA</h4><p>외기는 천천히 변하므로 강하게 평활화해도 정보 손실이 없고, 일사나 실외기 배기에 의한 순간 스파이크를 없앨 수 있습니다.</p></li>
+              <li><h4><span class="code">O2</span>운영 시간 마스크 · 공휴일 캘린더</h4><p>비운영 시간 탐지를 이상 알림으로 분기하고, 운영 시작 전 예냉 구간을 정의합니다.</p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="pp-energy" aria-labelledby="tab-energy" hidden>
+            <ul class="tech-list">
+              <li><h4><span class="code">E1</span>CT 1분 평균 · Wh 적산</h4><p>대시보드와 절감량 계산에 필요한 단위로 변환합니다.</p></li>
+              <li><h4><span class="code">E1</span>운전 상태 분류 (정지 / 송풍 / 압축기)</h4><p>피드백 상태와 교차 검증할 수 있고, 압축기의 실제 ON/OFF 횟수도 파악됩니다.</p></li>
+              <li><h4><span class="code">E2</span>기준선 정규화 (CDD · 재실시간 회귀)</h4><p>IPMVP 방식 B를 참고해 날씨와 재실 차이를 보정해야 도입 전후 절감률을 공정하게 비교할 수 있습니다. 대시보드 전용이며 제어에는 쓰지 않습니다.</p></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 전체 파이프라인 -->
+        <h3 class="sub-head reveal"><small>전체 파이프라인</small>다섯 갈래로 정제해 10초 그리드에서 합칩니다</h3>
+        <div class="branches reveal">
+          <div class="branch"><b>영상 · 인원<small>V</small></b><ol><li><span class="code">V1</span>캡처·ROI</li><li><span class="code">V2</span>적응형 샘플링</li><li><span class="code">V3</span>검출</li><li><span class="code">V4</span>박스 필터·프레임 폐기</li><li><span class="code">V5</span>추적</li><li><span class="code">V6</span>바닥 투영·구역</li><li><span class="code">V7</span>중앙값·Hampel</li><li><span class="code">V8</span>10초 리샘플링</li><li><span class="code">V9</span>재실 상태·단계</li></ol></div>
+          <div class="branch"><b>온습도<small>S</small></b><ol><li><span class="code">S1</span>범위</li><li><span class="code">S2</span>변화율·Hampel</li><li><span class="code">S3</span>결측·플래그</li><li><span class="code">S4</span>오프셋</li><li><span class="code">S5</span>그리드·EMA</li><li><span class="code">S6</span>이슬점·dT/dt</li></ol></div>
+          <div class="branch"><b>에어컨<small>A</small></b><ol><li><span class="code">A1</span>계단 함수</li><li><span class="code">A2</span>명령-피드백 대조</li><li><span class="code">A3</span>응답 지연 추정</li></ol></div>
+          <div class="branch"><b>외기 · 에너지<small>O · E</small></b><ol><li><span class="code">O1</span>외기 정제</li><li><span class="code">O2</span>운영 스케줄</li><li><span class="code">E1</span>전력·운전 상태</li><li><span class="code">E2</span>기준선 회귀</li></ol></div>
+          <div class="branch merge"><b>통합 · 출력 보호<small>M · P</small></b><ol><li><span class="code">M1</span>10초 병합</li><li><span class="code">M2</span>안전 모드 판정</li><li><span class="code">M3</span>1분 제어 집계</li><li><span class="code">M4</span>정규화(ML 시)</li><li><span class="code">P1</span>압축기·변화율·수동 보호</li></ol></div>
+        </div>
+        <p class="note reveal">모든 장치는 NTP로 맞추고 엣지 기기를 마스터 시계로 둡니다. 영상 카운트에는 추론 완료가 아닌 프레임 캡처 시각을 기록합니다.</p>
+
+        <!-- 순서 근거 -->
+        <h3 class="sub-head reveal"><small>순서의 근거</small>이 순서가 바뀌면 안 되는 이유</h3>
+        <ol class="order">
+          <li class="reveal"><span class="pair"><span class="code">V4</span>추론 직후</span><h4>프레임 폐기는 검출 바로 다음</h4><p>이후 단계가 영상을 필요로 하지 않게 설계해야 원본 미저장 조건이 구조적으로 보장됩니다.</p></li>
+          <li class="reveal"><span class="pair"><span class="code">V5</span>→<span class="code">V6</span></span><h4>추적한 뒤에 구역 할당</h4><p>경계에 선 사람이 두 구역에서 번갈아 세어지지 않도록, 트랙 단위로 할당해야 히스테리시스를 걸 수 있습니다.</p></li>
+          <li class="reveal"><span class="pair"><span class="code">V6</span>발 위치</span><h4>박스 중심이 아닌 발 위치를 투영</h4><p>사선 시점에서는 박스 중심이 실제 위치보다 카메라 반대쪽으로 밀려 보입니다.</p></li>
+          <li class="reveal"><span class="pair"><span class="code">V7</span>→<span class="code">V8</span></span><h4>이상치 제거 후 리샘플링</h4><p>구간을 집계한 뒤에는 스파이크가 정상값과 섞여 분리할 수 없습니다.</p></li>
+          <li class="reveal"><span class="pair"><span class="code">S2</span>→<span class="code">S3</span></span><h4>이상치 제거 후 결측 보간</h4><p>순서가 반대면 스파이크를 기준점으로 보간해 오류가 주변 구간까지 퍼집니다.</p></li>
+          <li class="reveal"><span class="pair"><span class="code">S4</span>→<span class="code">S5</span>→<span class="code">S6</span></span><h4>보정 후 평활화, 그다음 이슬점</h4><p>보정 전 값으로 임계값을 비교하면 기준이 어긋나고, 이슬점은 비선형이라 한쪽만 보정하면 오차가 커집니다.</p></li>
+          <li class="reveal"><span class="pair"><span class="code">M4</span>맨 마지막</span><h4>정규화는 정제가 끝난 뒤</h4><p>이상치가 섞인 데이터로 평균·표준편차를 구하면 스케일이 왜곡되고, 학습 통계를 고정해야 운영 중 분포가 흔들리지 않습니다.</p></li>
+          <li class="reveal"><span class="pair"><span class="code">P1</span>출력단</span><h4>출력 보호는 반드시 존재</h4><p>입력 전처리가 아무리 좋아도 출력단 보호가 없으면 압축기 단주기 운전이 생길 수 있습니다.</p></li>
+        </ol>
+
+        <!-- 결측 전략 -->
+        <h3 class="sub-head reveal"><small>결측 처리 전략</small>모르면 재실 쪽으로, 보수적으로 해석합니다</h3>
+        <div class="table-scroll reveal">
+          <table class="compare miss">
+            <thead>
+              <tr><th scope="col">데이터</th><th scope="col">짧은 결측</th><th scope="col">중간 결측</th><th scope="col">긴 결측</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">영상 카운트<small>결측을 공실로 보면 재실자가 있어도 꺼짐</small></th><td>30초 이내: 직전 재실 상태 유지</td><td>30초~5분: 재실 유지, 공실 전환 금지</td><td>5분 초과: 카메라 이상 알림, 스케줄 기반 운전</td></tr>
+              <tr><th scope="row">온습도<small>공간 열용량이 커서 5분 내 변화는 거의 선형</small></th><td>30초 이내: 직전값 유지</td><td>30초~5분: 선형 보간 + 보간 플래그</td><td>5분 초과: 무효 처리, 안전 모드</td></tr>
+              <tr><th scope="row">에어컨 상태<small>상태를 모른 채 명령을 쌓으면 오제어 누적</small></th><td>마지막 명령 기준으로 상태 추정</td><td>1분 이상 불일치: 재전송</td><td>불일치 지속: 알림, 자동 제어 중단</td></tr>
+              <tr><th scope="row">외기<small>보조 변수라 없어도 제어 가능</small></th><td>5분 이내: 직전값 유지</td><td>5~30분: 선형 보간</td><td>30분 초과: 외기 제외 모드</td></tr>
+              <tr><th scope="row">에너지<small>제어 영향 없음, 절감률 신뢰도용</small></th><td>적산값 보간</td><td>운전 상태로 소비전력 추정</td><td>결측 표시, 절감량 계산에서 제외</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note reveal">모든 값에 품질 플래그(정상 / 보간 / 추정 / 무효)를 함께 저장해, 나중에 모델을 학습할 때 보간·추정 구간을 제외하거나 가중치를 낮출 수 있게 합니다.</p>
+
+        <!-- 위험 Top 5 -->
+        <h3 class="sub-head reveal"><small>오탐·오제어 위험 Top 5</small>전처리로 막는 다섯 가지 실패</h3>
+        <ol class="risks">
+          <li class="reveal"><div><h4>커버리지 부족으로 인한 '거짓 공실'</h4><p class="cause">사각에 있는 재실자를 놓치면 공실로 판정돼 에어컨이 꺼집니다.</p></div><p class="fix"><b>대응</b>공실 확정 지연을 길게, 원거리 타일 추론, 결측은 재실로 해석. 출입구를 거치지 않고 사라진 트랙은 일정 시간 재실로 유지합니다.</p></li>
+          <li class="reveal"><div><h4>소수 인원에서의 단주기 운전</h4><p class="cause">한두 명의 짧은 출입만으로 재실·공실이 반복 전환됩니다.</p></div><p class="fix"><b>대응</b>비대칭 Debounce(입실 30초·공실 5분)와 압축기 최소 ON/OFF. 공실 시 바로 끄지 않고 Setback(+2℃) 후 OFF하는 2단계 전략.</p></li>
+          <li class="reveal"><div><h4>온습도 센서 위치에 의한 왜곡</h4><p class="cause">토출 기류가 닿으면 실제보다 낮게 측정돼 냉방을 일찍 멈춥니다.</p></div><p class="fix"><b>대응</b>기류가 닿지 않는 내벽 1.2~1.5m에 설치하고 오프셋 보정. 냉방 직후 비정상 급강하는 기류 의심 플래그로 감시합니다.</p></li>
+          <li class="reveal"><div><h4>에어컨 명령-상태 불일치</h4><p class="cause">IR 전달 실패로 '켰다고 믿는 상태'가 어긋나면 이후 판단이 모두 틀어집니다.</p></div><p class="fix"><b>대응</b>30초 내 피드백 대조, 재전송 후에도 불일치면 알림. 명령 없는 상태 변화는 수동 조작으로 라벨링하고 자동 제어를 보류합니다.</p></li>
+          <li class="reveal"><div><h4>냉방 중 상대습도 상승에 의한 제습 오작동</h4><p class="cause">온도가 내려가면 수증기량이 그대로여도 상대습도가 올라갑니다.</p></div><p class="fix"><b>대응</b>이슬점·절대습도를 함께 보고 진입·해제에 히스테리시스와 지속 시간 조건. 보간 플래그가 붙은 값으로는 모드를 바꾸지 않습니다.</p></li>
+        </ol>
+        <p class="note reveal">수치는 파일럿 현장 조건에서 출발하는 초기 추정치이며, 정답 라벨과 1~2주 그림자 모드(명령 없이 판단만 기록) 로그로 튜닝합니다. 출처: 현장 맞춤 전처리 설계안 (report/preprocess_report.md)</p>
       </div>
     </section>
 
@@ -844,6 +1077,27 @@
     }
     sim.addEventListener('input', updateSim);
     updateSim();
+
+    // ----- 전처리 탭: 데이터 소스별 기법 -----
+    const tabs = [...document.querySelectorAll('#preprocess [role=tab]')];
+    function selectTab(tab) {
+      tabs.forEach(t => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', on);
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+    }
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => selectTab(t));
+      t.addEventListener('keydown', e => {
+        const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!step) return;
+        const next = tabs[(i + step + tabs.length) % tabs.length];
+        selectTab(next);
+        next.focus();
+      });
+    });
 
     // ----- ROI 계산기 (PRD 6장 수치, 단위: 원) -----
     const CAPEX = 166400000, ELEC = 80000000, OTHER_GAIN = 4800000, OPEX = 3504000;
