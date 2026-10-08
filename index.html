@@ -468,6 +468,7 @@
         <li><a href="#how">작동 방식</a></li>
         <li><a href="#preprocess">전처리</a></li>
         <li><a href="#postprocess">후처리</a></li>
+        <li><a href="#model">AI 모델</a></li>
         <li><a href="#privacy">프라이버시</a></li>
         <li><a href="#metrics">성능 지표</a></li>
         <li><a href="#roi">ROI</a></li>
@@ -902,6 +903,147 @@
       </div>
     </section>
 
+    <!-- ===== AI 모델 (report/model_selection_report.md 요약) ===== -->
+    <section id="model">
+      <div class="wrap">
+        <div class="head-row reveal">
+          <div>
+            <span class="kicker">AI Model</span>
+            <h2 class="title">앉아 있어도, 어두워도<br>머리 하나까지 셉니다</h2>
+          </div>
+          <p class="intro">착석, 부분 가림, 야간 IR 조건에서 사람 수를 세기 위해 <b>천장 시점 데이터로 미세조정한 경량 YOLO</b>를 씁니다. 합격 기준은 박스 정확도(mAP)가 아니라 <b>몇 명인지 맞혔는가</b>입니다.</p>
+        </div>
+
+        <!-- 핵심 수치 -->
+        <div class="kpi-grid num reveal">
+          <div class="kpi"><small>모델</small><b>YOLO11n</b><h3>파라미터 2.6M</h3><p>NPU 비호환 시 YOLOv8n으로 교체</p></div>
+          <div class="kpi"><small>입력</small><b>416<em>px</em></b><h3>학습 해상도</h3><p>배포는 320 / 416 실기기 비교 후 결정</p></div>
+          <div class="kpi"><small>배포</small><b>~3<em>MB</em></b><h3>TFLite INT8</h3><p>i.MX 8M Plus NPU, 목표 200ms 이하</p></div>
+          <div class="kpi"><small>목표</small><b>0.5<em>명</em></b><h3>Count MAE</h3><p>±1명 95% · 재실 미검출 0.5% 이하</p></div>
+        </div>
+
+        <!-- 설계를 정한 두 가지 판단 -->
+        <div class="premise" style="margin-top:24px">
+          <div class="panel reveal">
+            <div class="figure num">head</div>
+            <div>
+              <small>판단 1 · 무엇을 검출하는가</small>
+              <h3>몸이 아니라 머리를 셉니다</h3>
+              <p>천장에서 보면 책상이 몸통을 가려도 <b>머리는 거의 항상 보이고</b>, 밀집해도 머리 박스는 잘 겹치지 않습니다. 바닥 투영(V6)에 필요한 발 위치를 위해 <b>person</b> 클래스도 함께 학습합니다.</p>
+            </div>
+          </div>
+          <div class="panel reveal">
+            <div class="figure num">1<em>회</em></div>
+            <div>
+              <small>판단 2 · 어떻게 학습하는가</small>
+              <h3>단일 단계 전체 미세조정</h3>
+              <p>COCO 가중치에서 시작해 공개 데이터와 자체 천장 데이터를 <b>섞어 한 번에</b> 학습합니다. 백본을 고정하는 대신 <b>워밍업 3 epoch</b>로 사전학습 특징을 보호하고, 백본 고정은 현장별 소량 재학습에만 씁니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 후보 비교 -->
+        <h3 class="sub-head reveal"><small>모델 크기 선택</small>nano급 중에서 크기 대비 정확도가 가장 좋은 모델</h3>
+        <div class="table-scroll reveal">
+          <table class="compare">
+            <thead>
+              <tr><th scope="col">모델</th><th scope="col">파라미터</th><th scope="col">GFLOPs @416</th><th scope="col">COCO mAP50-95</th><th scope="col">판단</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">YOLOv8n</th><td>3.2M</td><td>약 3.7</td><td>37.3</td><td>NPU 사례가 가장 많음. 대안</td></tr>
+              <tr class="us"><th scope="row">YOLO11n <span>채택</span></th><td>2.6M</td><td>약 2.7</td><td>39.5</td><td>더 적은 연산으로 더 높은 정확도, 현재 코드와 호환</td></tr>
+              <tr><th scope="row">YOLO26n</th><td>약 2.4M</td><td>약 2.3</td><td>약 40</td><td>NMS가 없는 구조. 도구 지원 안정 후 비교</td></tr>
+              <tr><th scope="row">YOLO11s</th><td>9.4M</td><td>약 9.1</td><td>47.0</td><td>크기 상한(10MB)에 걸림. 정확도 상한 확인용</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note reveal">YOLO11의 어텐션 블록(C2PSA)이 NPU에서 지원되지 않으면 CPU로 넘어가 느려질 수 있어, 학습 전에 실기기에서 먼저 확인합니다(실험 E0).</p>
+
+        <!-- 전략 탭 -->
+        <h3 class="sub-head reveal"><small>학습 전략</small>데이터, 장비, 하이퍼파라미터</h3>
+        <div class="reveal">
+          <div class="tabs" role="tablist" aria-label="학습 전략">
+            <button role="tab" id="mtab-data" aria-controls="mq-data" aria-selected="true">데이터</button>
+            <button role="tab" id="mtab-aug" aria-controls="mq-aug" aria-selected="false" tabindex="-1">증강</button>
+            <button role="tab" id="mtab-mac" aria-controls="mq-mac" aria-selected="false" tabindex="-1">MacBook M4</button>
+            <button role="tab" id="mtab-hp" aria-controls="mq-hp" aria-selected="false" tabindex="-1">하이퍼파라미터</button>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="mq-data" aria-labelledby="mtab-data">
+            <ul class="tech-list">
+              <li><h4>공개 + 자체 데이터 혼합 <span class="lv must">기본</span></h4><p>CrowdHuman·SCUT-HEAD(머리), CEPDOF·HABBOF·WEPDTOF(천장 어안)에 자체 천장 데이터를 30~50% 섞습니다. 공개 데이터는 상업적 사용 라이선스를 확인합니다.</p></li>
+              <li><h4>환경 매트릭스로 수집 <span class="lv must">필수</span></h4><p>공간 5종·10곳 이상, 천장 2.4~3.5m, Top-view·사선, 주간·역광·야간 IR, 착석·이동, 0~15명을 고르게 채웁니다.</p></li>
+              <li><h4>빈 방 이미지 10~15% <span class="lv must">필수</span></h4><p>외투, 마네킹, 사람이 나오는 모니터가 있는 빈 방을 넣어 '거짓 재실'을 줄입니다.</p></li>
+              <li><h4>공간 단위 분할 <span class="lv must">필수</span></h4><p>연속 프레임이 학습·테스트에 함께 들어가 점수가 부풀지 않도록 공간별로 나눕니다. test는 1,000장 이상, 학습 중 한 번도 보지 않습니다.</p></li>
+              <li><h4>동의 기반 별도 수집 <span class="lv cond">프라이버시</span></h4><p>제품은 영상을 저장하지 않으므로, 학습 데이터는 서면 동의를 받은 별도 세션에서만 2~5초 간격으로 모읍니다.</p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="mq-aug" aria-labelledby="mtab-aug" hidden>
+            <ul class="tech-list">
+              <li><h4><span class="code">scale</span>0.5</h4><p>천장 높이 차이로 머리 크기가 약 2배까지 달라지는 것을 0.5~1.5배 범위로 덮습니다.</p></li>
+              <li><h4><span class="code">mosaic</span>1.0 · 마지막 10 epoch 끔</h4><p>한 장에 사람 수와 배경 종류를 늘려 적은 데이터를 보완하고, 끝은 실제 장면 구성으로 마무리합니다.</p></li>
+              <li><h4><span class="code">multi_scale</span>False</h4><p>배포 해상도가 고정(INT8)이고 크기 변화는 scale이 담당합니다. MPS에서 입력 크기가 바뀌면 느려집니다.</p></li>
+              <li><h4><span class="code">flipud</span>0.5</h4><p>내려다본 영상에는 위아래가 없어 상하 반전도 실제와 같습니다. 사선 설치 비중이 크면 낮춥니다.</p></li>
+              <li><h4><span class="code">hsv_v</span>0.5</h4><p>저조도·역광 대응. 야간 IR 이미지는 15~20%를 실제로 넣습니다.</p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="mq-mac" aria-labelledby="mtab-mac" hidden>
+            <ul class="tech-list">
+              <li><h4><span class="code">device</span>mps</h4><p>Apple GPU로 학습합니다. AMP는 CUDA 전용이라 FP32로 학습합니다.</p></li>
+              <li><h4><span class="code">batch</span>16</h4><p>AutoBatch는 CUDA 전용이라 직접 지정합니다. nbs=64 기준 그래디언트 누적으로 결과가 안정됩니다.</p></li>
+              <li><h4><span class="code">cache</span>disk</h4><p>통합 메모리 16GB를 학습에 남기기 위해 RAM 대신 디스크에 캐시합니다.</p></li>
+              <li><h4>발열 관리 · 체크포인트</h4><p>팬이 없어 오래 학습하면 느려집니다. 10 epoch마다 저장하고, caffeinate로 잠자기를 막고, 긴 비교 실험은 클라우드 GPU로 옮깁니다.</p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="mq-hp" aria-labelledby="mtab-hp" hidden>
+            <ul class="tech-list">
+              <li><h4><span class="code">optimizer</span>AdamW (명시)</h4><p>기본값 auto는 lr0를 무시하고 자동으로 정합니다. 적은 데이터 미세조정에는 AdamW가 안정적입니다.</p></li>
+              <li><h4><span class="code">lr0</span>0.001 · cos_lr</h4><p>초반에 val 점수가 COCO 기준선보다 크게 떨어지면 0.0005로 낮춥니다.</p></li>
+              <li><h4><span class="code">epochs</span>120 · <span class="code">patience</span>25</h4><p>상한은 넉넉히 두고, 25 epoch 동안 개선이 없으면 멈춰 맥북 학습 시간을 아낍니다.</p></li>
+              <li><h4><span class="code">freeze</span>0 · warmup 3</h4><p>전체를 한 번에 학습하고 워밍업으로 백본을 보호합니다. 현장 재학습만 freeze=11, lr0=0.0002로 짧게 합니다.</p></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 검증 -->
+        <h3 class="sub-head reveal"><small>검증 전략</small>모델 단독에서 현장까지, 세 단계로 넓혀 갑니다</h3>
+        <ol class="roadmap">
+          <li class="now reveal">
+            <small>L1 · 모델</small>
+            <h3>테스트셋 1,000장+ 카운트 평가</h3>
+            <ul>
+              <li>Count MAE ≤ 0.5명, ±1명 ≥ 95%</li>
+              <li>공실 오검출 ≤ 1%, 재실 미검출 ≤ 0.5%</li>
+              <li>인원·조명·자세·가림별 층화 평가</li>
+              <li>val에서 conf 임계값 결정</li>
+            </ul>
+          </li>
+          <li class="reveal">
+            <small>L2 · 파이프라인</small>
+            <h3>검출 + 추적 + 5초 중앙값</h3>
+            <ul>
+              <li>연속 영상에서 확정 인원 ±1명 ≥ 95%</li>
+              <li>인원 변화 감지 5초 이내</li>
+              <li>INT8 하락폭 mAP50 −2%p 이내</li>
+            </ul>
+          </li>
+          <li class="reveal">
+            <small>L3 · 실기기 · 현장</small>
+            <h3>i.MX 8M Plus와 파일럿</h3>
+            <ul>
+              <li>INT8 지연 ≤ 200ms, 5fps 유지</li>
+              <li>24시간 연속 발열 확인</li>
+              <li>재실 중 절전 오작동 구역당 월 1건 이하</li>
+            </ul>
+          </li>
+        </ol>
+        <p class="note reveal">요약 출처: 모델 선정 및 학습·검증 계획 (report/model_selection_report.md). 실험 계획(E0~E8), 학습 스크립트, 추가 확인 항목은 원문에서 볼 수 있습니다. YOLO26 수치와 지연 값은 실측 전 추정치입니다.</p>
+      </div>
+    </section>
+
     <!-- ===== 하루 시나리오 ===== -->
     <section class="dark">
       <div class="wrap scenario">
@@ -1205,7 +1347,7 @@
     sim.addEventListener('input', updateSim);
     updateSim();
 
-    // ----- 탭: 전처리(데이터 소스별), 후처리(계층별) -----
+    // ----- 탭: 전처리(데이터 소스별), 후처리(계층별), AI 모델(학습 전략) -----
     document.querySelectorAll('[role=tablist]').forEach(list => {
       const tabs = [...list.querySelectorAll('[role=tab]')];
       function selectTab(tab) {
