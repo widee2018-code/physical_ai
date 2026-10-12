@@ -469,6 +469,7 @@
         <li><a href="#preprocess">전처리</a></li>
         <li><a href="#postprocess">후처리</a></li>
         <li><a href="#model">AI 모델</a></li>
+        <li><a href="#vlm">비전 도구</a></li>
         <li><a href="#privacy">프라이버시</a></li>
         <li><a href="#metrics">성능 지표</a></li>
         <li><a href="#roi">ROI</a></li>
@@ -1041,6 +1042,35 @@
           </li>
         </ol>
         <p class="note reveal">요약 출처: 모델 선정 및 학습·검증 계획 (report/model_selection_report.md). 실험 계획(E0~E8), 학습 스크립트, 추가 확인 항목은 원문에서 볼 수 있습니다. YOLO26 수치와 지연 값은 실측 전 추정치입니다.</p>
+      </div>
+    </section>
+
+    <!-- ===== 비전·VLM 도구 (report/VLM_report.md 요약) ===== -->
+    <section class="gray" id="vlm">
+      <div class="wrap">
+        <div class="head-row reveal">
+          <div>
+            <span class="kicker">Vision Tools</span>
+            <h2 class="title">배포는 YOLO11n,<br>나머지 모델은 개발 도구로</h2>
+          </div>
+          <p class="intro">비전·비전-언어 모델 6종을 비교했습니다. 대부분 엣지 NPU에 올리기에는 무거워서 <b>라벨링, 데이터 선별, 검증</b> 단계의 도구로 씁니다.</p>
+        </div>
+        <div class="table-scroll reveal">
+          <table class="compare">
+            <thead>
+              <tr><th scope="col">모델</th><th scope="col">무엇을 보는가</th><th scope="col">OccuCool 활용</th></tr>
+            </thead>
+            <tbody>
+              <tr class="us"><th scope="row">YOLOE</th><td>무엇이 어디에 (텍스트 프롬프트 탐지·분할)</td><td>"head" 프롬프트로 자동 사전 라벨 생성</td></tr>
+              <tr><th scope="row">SAM2</th><td>물체의 정확한 경계 (클래스 없음)</td><td>박스 품질 보정, 영상 프레임 간 라벨 전파</td></tr>
+              <tr><th scope="row">SigLIP2</th><td>이미지와 문장의 유사도</td><td>문장 검색으로 어려운 샘플(어두운 방, 밀집 회의실) 선별</td></tr>
+              <tr><th scope="row">DINO-X</th><td>탐지·분할·키포인트·설명 통합 (클라우드 API)</td><td>정확도 기준선, 인원 수 교차 검증 (동의된 데이터만)</td></tr>
+              <tr><th scope="row">MediaPipe</th><td>사람의 얼굴·손·자세</td><td>착석/서 있음 보조 라벨 (측면 시점만)</td></tr>
+              <tr><th scope="row">OCR</th><td>이미지 속 글자 (한국어 10줄 중 9줄 완전 일치)</td><td>실험 메타정보, 온도계·리모컨 숫자 기록</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note reveal">요약 출처: 비전·비전-언어 모델 6종 비교 보고서 (report/VLM_report.md). DINO-X는 직접 실행하지 않았으며 공개 자료 기준입니다.</p>
       </div>
     </section>
 
