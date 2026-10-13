@@ -444,6 +444,107 @@
       .gaps { grid-template-columns: 1fr; }
       #postprocess .tech-list { padding: 0 16px; }
     }
+    /* ===== RAG 챗봇 (occucool 테이블 검색 + Gemini 답변) ===== */
+    .oc-fab {
+      position: fixed; right: 24px; bottom: 24px; z-index: 60;
+      width: 60px; height: 60px; border-radius: 50%; border: 0; cursor: pointer;
+      background: var(--cool); color: var(--night); display: grid; place-items: center;
+      box-shadow: 0 10px 30px rgba(2, 132, 199, .35); transition: background .2s, color .2s, transform .2s;
+    }
+    .oc-fab:hover { background: var(--cool-deep); color: #fff; transform: translateY(-2px); }
+    .oc-fab svg { width: 26px; height: 26px; }
+    .oc-fab .oc-ic-close, .oc-fab[aria-expanded="true"] .oc-ic-chat { display: none; }
+    .oc-fab[aria-expanded="true"] .oc-ic-close { display: block; }
+    .oc-fab .oc-badge {
+      position: absolute; top: 2px; right: 2px; width: 12px; height: 12px; border-radius: 50%;
+      background: var(--ok); border: 2px solid #fff;
+    }
+    .oc-fab[aria-expanded="true"] .oc-badge, .oc-fab.seen .oc-badge { display: none; }
+
+    .oc-panel {
+      position: fixed; right: 24px; bottom: 96px; z-index: 60;
+      width: 384px; height: min(620px, calc(100vh - 128px));
+      display: flex; flex-direction: column; overflow: hidden;
+      background: var(--paper); color: var(--ink); border: 1px solid var(--line); border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(7, 13, 24, .24);
+      transform-origin: bottom right; animation: oc-pop .18s ease-out;
+    }
+    .oc-panel[hidden] { display: none; }
+    @keyframes oc-pop { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+
+    .oc-head { display: flex; align-items: center; gap: 12px; padding: 16px 16px 16px 18px; background: var(--night); color: #E8EDF5; }
+    .oc-head .brand-mark { flex: none; }
+    .oc-head-text { flex: 1; min-width: 0; line-height: 1.35; }
+    .oc-head-text b { display: block; font-size: 15px; font-weight: 700; }
+    .oc-head-text span { font-size: 12px; color: #A5B0C2; }
+    .oc-icon-btn {
+      flex: none; width: 34px; height: 34px; border-radius: 10px; border: 0; cursor: pointer;
+      background: transparent; color: #A5B0C2; display: grid; place-items: center;
+    }
+    .oc-icon-btn:hover { background: var(--night-2); color: #fff; }
+    .oc-icon-btn svg { width: 18px; height: 18px; }
+
+    .oc-body { flex: 1; overflow-y: auto; padding: 18px 16px; background: var(--paper-2); display: flex; flex-direction: column; gap: 14px; }
+    .oc-msg { max-width: 88%; font-size: 14.5px; line-height: 1.65; }
+    .oc-msg p + p { margin-top: 6px; }
+    .oc-msg ul, .oc-msg ol { padding-left: 18px; margin: 4px 0; }
+    .oc-bot { align-self: flex-start; }
+    .oc-bot .oc-bubble { background: #fff; border: 1px solid var(--line); border-radius: 4px 14px 14px 14px; padding: 11px 14px; }
+    .oc-user { align-self: flex-end; background: var(--cool-deep); color: #fff; border-radius: 14px 4px 14px 14px; padding: 10px 14px; white-space: pre-wrap; }
+    .oc-error .oc-bubble { border-color: #FCA5A5; color: #B91C1C; }
+    .oc-cite {
+      display: inline-block; min-width: 18px; padding: 0 5px; margin: 0 1px; border-radius: 5px;
+      font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; vertical-align: 1px;
+      background: #E0F2FE; color: var(--cool-deep);
+    }
+    .oc-sources { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .oc-sources a {
+      display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 4px 10px;
+      font-size: 12px; color: var(--sub); background: #fff; border: 1px solid var(--line); border-radius: 999px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .oc-sources a:hover { border-color: var(--cool); color: var(--cool-deep); }
+    .oc-sources a b { color: var(--cool-deep); }
+
+    .oc-suggest { display: flex; flex-wrap: wrap; gap: 6px; }
+    .oc-suggest button {
+      padding: 7px 12px; font: inherit; font-size: 13px; cursor: pointer;
+      color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 999px;
+    }
+    .oc-suggest button:hover { border-color: var(--cool); color: var(--cool-deep); }
+
+    .oc-typing { display: inline-flex; gap: 4px; padding: 4px 2px; }
+    .oc-typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--mute); animation: oc-blink 1.2s infinite ease-in-out; }
+    .oc-typing i:nth-child(2) { animation-delay: .15s; }
+    .oc-typing i:nth-child(3) { animation-delay: .3s; }
+    @keyframes oc-blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+
+    .oc-form { display: flex; align-items: flex-end; gap: 8px; padding: 12px; border-top: 1px solid var(--line); background: #fff; }
+    .oc-form textarea {
+      flex: 1; min-width: 0; resize: none; max-height: 112px; padding: 10px 12px;
+      font: inherit; font-size: 14.5px; line-height: 1.5; color: var(--ink);
+      border: 1px solid var(--line); border-radius: 12px; outline: none;
+    }
+    .oc-form textarea:focus { border-color: var(--cool); box-shadow: 0 0 0 3px rgba(56, 189, 248, .2); }
+    .oc-send {
+      flex: none; width: 42px; height: 42px; border: 0; border-radius: 12px; cursor: pointer;
+      background: var(--ink); color: #fff; display: grid; place-items: center;
+    }
+    .oc-send:hover { background: var(--cool-deep); }
+    .oc-send:disabled { opacity: .35; cursor: default; background: var(--ink); }
+    .oc-send svg { width: 18px; height: 18px; }
+    .oc-foot { padding: 0 12px 10px; background: #fff; font-size: 11px; color: var(--mute); text-align: center; }
+
+    @media (max-width: 720px) {
+      .oc-fab { right: 16px; bottom: 16px; }
+      .oc-panel { inset: 0; width: auto; height: auto; border-radius: 0; border: 0; }
+      body.oc-open { overflow: hidden; }
+      body.oc-open .oc-fab { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .oc-panel, .oc-typing i { animation: none; }
+      .oc-fab { transition: none; }
+    }
   </style>
 </head>
 <body>
@@ -480,7 +581,7 @@
 
   <main>
     <!-- ===== 첫 화면 ===== -->
-    <section class="hero">
+    <section class="hero" id="hero">
       <div class="wrap">
         <div>
           <span class="badge"><span class="dot"></span>Edge AI HVAC Controller · v1</span>
@@ -1075,7 +1176,7 @@
     </section>
 
     <!-- ===== 하루 시나리오 ===== -->
-    <section class="dark">
+    <section class="dark" id="day">
       <div class="wrap scenario">
         <aside class="reveal">
           <span class="kicker">A day with OccuCool</span>
@@ -1128,7 +1229,7 @@
     </section>
 
     <!-- ===== 적용 공간 ===== -->
-    <section class="gray">
+    <section class="gray" id="spaces">
       <div class="wrap">
         <div class="head-row reveal">
           <div>
@@ -1285,7 +1386,7 @@
     </section>
 
     <!-- ===== 로드맵 ===== -->
-    <section class="gray">
+    <section class="gray" id="roadmap">
       <div class="wrap">
         <div class="head-row reveal">
           <div>
@@ -1434,6 +1535,191 @@
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
+  <!-- ===== RAG 챗봇: 버튼을 누르면 열립니다 ===== -->
+  <button class="oc-fab" id="oc-fab" type="button" aria-expanded="false" aria-controls="oc-panel" aria-label="OccuCool 도우미 열기">
+    <svg class="oc-ic-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01" stroke-width="2.6"/></svg>
+    <svg class="oc-ic-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    <span class="oc-badge" aria-hidden="true"></span>
+  </button>
+
+  <div class="oc-panel" id="oc-panel" role="dialog" aria-label="OccuCool 도우미" hidden>
+    <div class="oc-head">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div class="oc-head-text">
+        <b>OccuCool 도우미</b>
+        <span>소개 자료를 검색해 Gemini가 답해 드려요</span>
+      </div>
+      <button class="oc-icon-btn" id="oc-reset" type="button" aria-label="새 대화" title="새 대화">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      </button>
+      <button class="oc-icon-btn" id="oc-close" type="button" aria-label="닫기" title="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="oc-body" id="oc-body" aria-live="polite"></div>
+    <form class="oc-form" id="oc-form">
+      <textarea id="oc-input" rows="1" maxlength="500" placeholder="OccuCool에 대해 물어보세요" aria-label="질문 입력"></textarea>
+      <button class="oc-send" id="oc-send" type="submit" aria-label="보내기" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </form>
+    <div class="oc-foot">답변은 AI가 생성하며 틀릴 수 있어요 · 모든 수치는 가정값입니다</div>
+  </div>
+  <script>
+    // ===== RAG 챗봇 =====
+    // 질문 → Supabase Edge Function(occucool-chat) → occucool 테이블 벡터 검색 → Gemini 답변
+    // Gemini API 키는 서버(Edge Function)에만 있고, 여기 있는 anon 키는 공개용입니다.
+    (() => {
+      const SUPABASE_URL = 'https://cbodqcxebmrrrrqudqsp.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNib2RxY3hlYm1ycnJycXVkcXNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NDAzMzQsImV4cCI6MjEwNzQxNjMzNH0._fKYs2XRHgOldFNB9fhQLNXwR3rPQkl0e_9adUFsMGI';
+      const ENDPOINT = `${SUPABASE_URL}/functions/v1/occucool-chat`;
+      const SUGGESTIONS = [
+        'OccuCool은 어떻게 작동해?',
+        '회의실에 12명이면 온도는?',
+        '영상은 어디에 저장돼?',
+        '왜 몸이 아니라 머리를 세?',
+        '투자 회수기간은?',
+      ];
+      const GREETING = '안녕하세요! OccuCool 소개 자료를 바탕으로 답해 드리는 도우미예요. 작동 방식, AI 모델, 프라이버시, ROI 등 궁금한 점을 물어보세요.';
+
+      const $ = id => document.getElementById(id);
+      const fab = $('oc-fab'), panel = $('oc-panel'), body = $('oc-body');
+      const form = $('oc-form'), input = $('oc-input'), send = $('oc-send');
+      let history = [];   // [{ role: 'user' | 'assistant', text }]
+      let busy = false;
+
+      const esc = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+      // Gemini 답변의 간단한 마크다운(굵게·목록)과 [1] 인용을 HTML로 바꿉니다
+      function format(text) {
+        let html = '', list = null;
+        for (const raw of esc(text).split('\n')) {
+          const line = raw.trim();
+          const m = line.match(/^(?:[-*•]|\d+[.)])\s+(.*)/);
+          const type = m ? (/^\d/.test(line) ? 'ol' : 'ul') : null;
+          if (list && list !== type) { html += `</${list}>`; list = null; }
+          if (type) { if (!list) { html += `<${type}>`; list = type; } html += `<li>${m[1]}</li>`; }
+          else if (line) html += `<p>${line}</p>`;
+        }
+        if (list) html += `</${list}>`;
+        return html
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g, (_, nums) => nums.split(/\s*,\s*/).map(n => `<span class="oc-cite">${n}</span>`).join(''));
+      }
+
+      // 답변에 실제로 인용된 번호만 출처 칩으로 보여 줍니다
+      function citedRefs(text) {
+        const refs = new Set();
+        for (const m of text.matchAll(/\[(\d+(?:\s*,\s*\d+)*)\]/g)) m[1].split(/\s*,\s*/).forEach(n => refs.add(Number(n)));
+        return refs;
+      }
+
+      function addMessage(role, html) {
+        const el = document.createElement('div');
+        if (role === 'user') { el.className = 'oc-msg oc-user'; el.textContent = html; }
+        else { el.className = `oc-msg oc-bot${role === 'error' ? ' oc-error' : ''}`; el.innerHTML = `<div class="oc-bubble">${html}</div>`; }
+        body.appendChild(el);
+        body.scrollTop = body.scrollHeight;
+        return el;
+      }
+
+      function addSources(el, sources) {
+        if (!sources.length) return;
+        const box = document.createElement('div');
+        box.className = 'oc-sources';
+        sources.forEach(s => {
+          const a = document.createElement('a');
+          const anchor = (s.source || '').match(/index\.html#([\w-]+)/);
+          a.href = anchor ? `#${anchor[1]}` : '#';
+          a.title = `${s.section} · ${s.title}`;
+          a.innerHTML = `<b>${s.ref}</b>${esc(s.section)} · ${esc(s.title)}`;
+          a.addEventListener('click', () => { if (window.matchMedia('(max-width: 720px)').matches) toggle(false); });
+          box.appendChild(a);
+        });
+        el.appendChild(box);
+      }
+
+      function showWelcome() {
+        body.innerHTML = '';
+        addMessage('bot', `<p>${GREETING}</p>`);
+        const box = document.createElement('div');
+        box.className = 'oc-suggest';
+        SUGGESTIONS.forEach(q => {
+          const b = document.createElement('button');
+          b.type = 'button'; b.textContent = q;
+          b.addEventListener('click', () => ask(q));
+          box.appendChild(b);
+        });
+        body.appendChild(box);
+      }
+
+      async function ask(question) {
+        if (busy) return;
+        busy = true; send.disabled = true;
+        body.querySelector('.oc-suggest')?.remove();
+        addMessage('user', question);
+        const typing = addMessage('bot', '<span class="oc-typing" aria-label="답변 작성 중"><i></i><i></i><i></i></span>');
+        try {
+          const res = await fetch(ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SUPABASE_ANON_KEY}`, apikey: SUPABASE_ANON_KEY },
+            body: JSON.stringify({ question, history }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || data.error) throw new Error(data.error || data.msg || `HTTP ${res.status}`);
+          typing.remove();
+          const el = addMessage('bot', format(data.answer));
+          const refs = citedRefs(data.answer);
+          addSources(el, data.sources.filter(s => refs.has(s.ref)));
+          history.push({ role: 'user', text: question }, { role: 'assistant', text: data.answer });
+          history = history.slice(-6);
+        } catch (err) {
+          typing.remove();
+          addMessage('error', `<p>답변을 가져오지 못했어요. 잠시 후 다시 시도해 주세요.</p><p style="font-size:12px;opacity:.8">${esc(err.message)}</p>`);
+        } finally {
+          busy = false;
+          send.disabled = !input.value.trim();
+          body.scrollTop = body.scrollHeight;
+        }
+      }
+
+      function toggle(open = panel.hidden) {
+        panel.hidden = !open;
+        fab.setAttribute('aria-expanded', open);
+        fab.setAttribute('aria-label', open ? 'OccuCool 도우미 닫기' : 'OccuCool 도우미 열기');
+        document.body.classList.toggle('oc-open', open);
+        if (open) {
+          fab.classList.add('seen');
+          if (!body.children.length) showWelcome();
+          input.focus();
+        } else {
+          fab.focus();
+        }
+      }
+
+      function autoGrow() {
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 112) + 'px';
+      }
+
+      fab.addEventListener('click', () => toggle());
+      $('oc-close').addEventListener('click', () => toggle(false));
+      $('oc-reset').addEventListener('click', () => { if (!busy) { history = []; showWelcome(); input.focus(); } });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) toggle(false); });
+      input.addEventListener('input', () => { send.disabled = busy || !input.value.trim(); autoGrow(); });
+      input.addEventListener('keydown', e => {
+        // 한글 조합 중 Enter는 무시해야 마지막 글자가 중복 전송되지 않습니다
+        if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+      });
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const q = input.value.trim();
+        if (!q || busy) return;
+        input.value = ''; autoGrow();
+        ask(q);
+      });
+    })();
   </script>
 </body>
 </html>
