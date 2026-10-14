@@ -321,6 +321,9 @@
     .space p { margin-top: 8px; font-size: 15px; color: var(--sub); }
 
     /* ----- 성공 지표 ----- */
+    .hw-diagram { margin-top: 24px; border-radius: var(--radius); overflow: hidden; background: #0E1219; border: 1px solid var(--line); }
+    .hw-diagram img { display: block; width: 100%; height: auto; }
+    .hw-diagram figcaption { padding: 12px 20px; font-size: 13px; color: #A5B0C2; border-top: 1px solid var(--night-line); }
     .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
     .kpi { background: #fff; padding: 28px; }
     .kpi small { font-size: 12px; font-weight: 600; letter-spacing: .08em; color: var(--mute); }
@@ -573,6 +576,7 @@
         <li><a href="#vlm">비전 도구</a></li>
         <li><a href="#privacy">프라이버시</a></li>
         <li><a href="#metrics">성능 지표</a></li>
+        <li><a href="#hardware">하드웨어</a></li>
         <li><a href="#roi">ROI</a></li>
       </ul>
       <a class="btn btn-light" href="#contact">파일럿 문의</a>
@@ -1336,6 +1340,135 @@
       </div>
     </section>
 
+    <!-- ===== 하드웨어 구성 (report/hardware_report.md 요약) ===== -->
+    <section class="gray" id="hardware">
+      <div class="wrap">
+        <div class="head-row reveal">
+          <div>
+            <span class="kicker">Hardware</span>
+            <h2 class="title">SoC는 영상을, MCU는 에어컨을<br>따로 맡습니다</h2>
+          </div>
+          <p class="intro">i.MX 8M Plus SoC가 카메라·NPU 추론·클라우드 통신을, Cortex-M MCU가 센서·IR·RS-485·보호 규칙을 맡습니다. <b>SoC가 멈춰도 MCU가 에어컨 보호 규칙과 안전 모드를 계속 지킵니다.</b></p>
+        </div>
+
+        <!-- 핵심 수치 -->
+        <div class="kpi-grid num reveal">
+          <div class="kpi"><small>메인 SoC</small><b>2.3<em>TOPS</em></b><h3>i.MX 8M Plus</h3><p>Cortex-A53 ×4 · LPDDR4 2GB · eMMC 16GB</p></div>
+          <div class="kpi"><small>평상시</small><b>~5<em>W</em></b><h3>소비전력</h3><p>연간 약 44kWh/대</p></div>
+          <div class="kpi"><small>최대</small><b>~12<em>W</em></b><h3>현실적 최대</h3><p>최악 조건(IR 조명·송신 펄스 포함) 약 17W</p></div>
+          <div class="kpi"><small>전원</small><b>12<em>V</em></b><h3>DC 어댑터 2A</h3><p>파일럿 권장 · PoE는 상업 현장 옵션</p></div>
+        </div>
+
+        <!-- 블록 다이어그램 -->
+        <figure class="hw-diagram reveal">
+          <img src="report/images/hardware_block_diagram.png" alt="OccuCool 하드웨어 블록 다이어그램: 12V 입력이 5V·3.3V Buck을 거쳐 i.MX 8M Plus SoM과 서브 MCU에 전원을 공급하고, SoC는 카메라(MIPI CSI-2), Wi-Fi/BLE(SDIO·UART), GbE PHY(RGMII), 보안 소자(I²C)와, MCU는 온습도·CO₂·RTC(I²C), IR 송수신(PWM·GPIO), RS-485 트랜시버(UART)와 연결됩니다." loading="lazy" width="3000" height="1950">
+          <figcaption>주황 실선 = 전원 배선 · 청록 점선 = 보드 내 신호(통신 방식 표기) · 회색 점선 = 외부 무선·버스 연결</figcaption>
+        </figure>
+
+        <!-- 역할 분담 -->
+        <div class="premise" style="margin-top:24px">
+          <div class="panel reveal">
+            <div class="figure num">SoC</div>
+            <div>
+              <small>i.MX 8M Plus · Linux</small>
+              <h3>보고, 판단하고, 보고합니다</h3>
+              <p>카메라 입력, <b>NPU 추론</b>, 추적·재실 판정, MQTT/TLS 클라우드 통신, 오프라인 로그 버퍼, OTA를 맡습니다. 리눅스와 NPU가 필요한 무거운 작업입니다.</p>
+            </div>
+          </div>
+          <div class="panel reveal">
+            <div class="figure num">MCU</div>
+            <div>
+              <small>Cortex-M · 실시간 제어</small>
+              <h3>SoC가 멈춰도 계속 돕니다</h3>
+              <p>온습도 측정, IR 송수신, RS-485 Modbus, <b>압축기 3분 보호·시간당 4회 제한</b>, SoC 워치독을 맡습니다. 하트비트가 끊기면 SoC를 리셋하고 안전 모드로 들어갑니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 부품별 탭 -->
+        <h3 class="sub-head reveal"><small>부품 구성</small>전압 · 전류 · 통신 방식</h3>
+        <div class="reveal">
+          <div class="tabs" role="tablist" aria-label="하드웨어 부품">
+            <button role="tab" id="htab-core" aria-controls="hq-core" aria-selected="true">연산부</button>
+            <button role="tab" id="htab-cam" aria-controls="hq-cam" aria-selected="false" tabindex="-1">카메라 · 센서</button>
+            <button role="tab" id="htab-hvac" aria-controls="hq-hvac" aria-selected="false" tabindex="-1">에어컨 · 에너지</button>
+            <button role="tab" id="htab-net" aria-controls="hq-net" aria-selected="false" tabindex="-1">통신 · 보안</button>
+            <button role="tab" id="htab-pwr" aria-controls="hq-pwr" aria-selected="false" tabindex="-1">전원</button>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="hq-core" aria-labelledby="htab-core">
+            <ul class="tech-list">
+              <li><h4>i.MX 8M Plus SoM <span class="lv must">필수</span></h4><p>Cortex-A53 ×4 + M7, NPU 2.3 TOPS, 듀얼 ISP(노출·WB 고정), HAB 보안 부트. 5V 단일 입력, 일반 부하 약 2.5~3W, 최대 약 5~6W → <b>5V 레일 2A 이상</b>. 천장 안쪽 고온 대비 방열판 필요.</p></li>
+              <li><h4>LPDDR4 2GB · eMMC 16~32GB <span class="lv must">필수</span></h4><p>영상 프레임은 RAM에서만 처리 후 즉시 폐기. eMMC에는 OS, 모델(~3MB), 24시간 오프라인 로그를 저장합니다.</p></li>
+              <li><h4>서브 MCU (STM32G0/L4급) <span class="lv must">필수</span></h4><p>3.3V 별도 레일, 약 6~10mA. SoC와 <b>UART 115,200~921,600bps</b>(CRC16 + 시퀀스 번호)로 연결하고, 1초 하트비트로 SoC를 감시합니다.</p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="hq-cam" aria-labelledby="htab-cam" hidden>
+            <ul class="tech-list">
+              <li><h4>2MP 광각 카메라 <span class="lv must">필수</span></h4><p>IMX462(근적외선 감도↑), 110~130°, IR-Cut 자동 전환, 5fps(공실 0.5fps). 3.3V 단일 입력 약 100~150mA. 영상 <b>MIPI CSI-2</b>, 설정 <b>I²C(SCCB)</b>.</p></li>
+              <li><h4>850nm IR 조명 <span class="lv skip">파일럿 생략</span></h4><p>정전류 드라이버, 야간 약 1~2W. 파일럿 현장은 야간 재실이 없어 실장 패턴만 남깁니다.</p></li>
+              <li><h4>SHT4x 온습도 <span class="lv must">필수</span></h4><p>3.3V, 측정 중 약 320µA, <b>I²C 0x44</b>, 10초 주기. 토출 기류·본체 발열을 피해 내벽 1.2~1.5m 별도 모듈(Wi-Fi 또는 RS-485)로 둡니다.</p></li>
+              <li><h4>SCD41 CO₂ <span class="lv cond">선택</span></h4><p>3.3V 평균 약 15mA, 피크 205mA(벌크 커패시터 필요), <b>I²C 0x62</b>. 인원 추정이 아니라 환기 알림용입니다.</p></li>
+              <li><h4>열화상 · ToF <span class="lv cond">프라이버시 현장</span></h4><p>MLX90640(32×24, I²C 0x33), AMG8833(8×8), VL53L5CX(ToF). 해상도가 낮아 회의실 등 소형 구역 전용입니다.</p></li>
+              <li><h4>외기 온도 <span class="lv cond">선택</span></h4><p>DS18B20(1-Wire) 또는 RS-485 트랜스미터(12~24V, Modbus). 하드웨어 없이 기상청 API도 가능합니다.</p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="hq-hvac" aria-labelledby="htab-hvac" hidden>
+            <ul class="tech-list">
+              <li><h4>IR 송신 LED 940nm ×3~5 <span class="lv must">IR 현장</span></h4><p>5V 레일 + 로직 레벨 MOSFET, MCU 타이머 <b>PWM 38kHz · 듀티 1/3</b>. 펄스 피크 200mA~1A → 100~470µF 벌크 커패시터.</p></li>
+              <li><h4>IR 수신기 TSOP38238 <span class="lv must">IR 현장</span></h4><p>3.3V, 약 0.35mA, <b>GPIO 입력 캡처</b>. 리모컨 코드 학습과 <b>사용자 수동 조작 감지</b>(2시간 우선 규칙)에 씁니다.</p></li>
+              <li><h4>절연형 RS-485 (ADM2587E급) <span class="lv rec">권장</span></h4><p>3.3V, 약 70~100mA, <b>UART + DE/RE</b>. Modbus RTU 9,600/19,200bps, 120Ω 종단, TVS(SM712)로 서지 보호.</p></li>
+              <li><h4>BACnet 게이트웨이</h4><p>MS/TP는 같은 RS-485 트랜시버를, BACnet/IP는 SoC의 Ethernet(UDP 47808)을 씁니다.</p></li>
+              <li><h4>Modbus 전력량계 + 분할형 CT <span class="lv rec">권장</span></h4><p>컨트롤러 안으로 220V가 들어오지 않아 안전·인증이 쉽습니다. RS-485 버스 공용. 실외기 포함 전용 회로에 설치해 <b>압축기 가동 상태(정격의 20%)</b>를 판정합니다.</p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="hq-net" aria-labelledby="htab-net" hidden>
+            <ul class="tech-list">
+              <li><h4>Wi-Fi 6 + BLE 콤보 (IW612) <span class="lv must">필수</span></h4><p>3.3V + 1.8V, 송신 피크 300~500mA. Wi-Fi는 <b>SDIO 3.0</b>, BT는 <b>UART(HCI)</b>. 서버는 MQTT over TLS(8883), 설치는 BLE GATT. KC 인증 모듈을 고릅니다.</p></li>
+              <li><h4>GbE PHY + PoE PD <span class="lv cond">상업 현장</span></h4><p>PHY는 <b>RGMII + MDIO</b>, 약 0.3~0.5W. PoE 802.3af(12.95W) / 802.3at(25.5W), 37~57V → 12V.</p></li>
+              <li><h4>보안 소자 SE050 <span class="lv must">필수</span></h4><p>3.3V, <b>I²C 0x48</b>. 장치별 X.509 개인키를 칩 밖으로 꺼낼 수 없게 저장해 AWS IoT Core 상호 TLS 인증에 씁니다.</p></li>
+              <li><h4>RTC RV-3028 <span class="lv must">필수</span></h4><p>백업 약 45nA, 슈퍼커패시터, <b>I²C 0x52</b>. NTP가 끊겨도 24시간 로그 타임스탬프를 유지합니다.</p></li>
+              <li><h4>상태 LED · 카메라 표시 LED · 버튼</h4><p>카메라 표시 LED는 <b>카메라 전원 레일에 하드웨어로 연동</b>해 영상 처리 중임을 항상 보여 줍니다.</p></li>
+            </ul>
+          </div>
+
+          <div class="tab-panel" role="tabpanel" id="hq-pwr" aria-labelledby="htab-pwr" hidden>
+            <ul class="tech-list">
+              <li><h4>전원 트리</h4><p>DC 12V/2A 또는 PoE → 12V 버스(역전압·서지 보호, 퓨즈) → Buck 5V/3A(SoM, IR LED) → Buck 3.3V/2A(MCU·센서·무선·카메라·RS-485). SoC 코어 레일은 SoM의 PMIC PCA9450C가 만듭니다.</p></li>
+              <li><h4>MCU 전용 레일</h4><p>MCU는 별도 LDO로 공급해 SoC 쪽 과전류·리셋이 제어 루프를 멈추지 않게 합니다.</p></li>
+              <li><h4>DC 어댑터 12V/2A (24W) <span class="lv rec">파일럿 권장</span></h4><p>최악 조건(약 17W)까지 여유가 충분합니다.</p></li>
+              <li><h4>PoE 802.3af <span class="lv cond">주의</span></h4><p>현실적 최대 약 12W에 여유 1W 수준. IR 송신 펄스를 NPU 피크와 겹치지 않게 스케줄링하고, IR 조명 모델은 802.3at로 설계합니다.</p></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 통신 인터페이스 -->
+        <h3 class="sub-head reveal"><small>통신 인터페이스</small>어떤 부품이 무엇으로 연결되는가</h3>
+        <div class="table-scroll reveal">
+          <table class="compare">
+            <thead>
+              <tr><th scope="col">연결</th><th scope="col">주체 ↔ 대상</th><th scope="col">물리 계층</th><th scope="col">속도 / 설정</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">카메라</th><td>SoC ↔ 카메라</td><td>MIPI CSI-2 · I²C(SCCB)</td><td>수백 Mbps/lane · 400kHz</td></tr>
+              <tr class="us"><th scope="row">프로세서 간 <span>핵심</span></th><td>SoC ↔ MCU</td><td>UART (또는 SPI)</td><td>115,200~921,600bps · CRC16</td></tr>
+              <tr><th scope="row">센서 버스</th><td>MCU ↔ SHT4x · SCD41 · RTC</td><td>I²C</td><td>100~400kHz · 0x44 / 0x62 / 0x52</td></tr>
+              <tr><th scope="row">IR 송수신</th><td>MCU ↔ IR LED · 수신기</td><td>PWM · GPIO 입력 캡처</td><td>38kHz 캐리어</td></tr>
+              <tr><th scope="row">에어컨 · 계량기</th><td>MCU ↔ 시스템 에어컨 · 전력량계</td><td>RS-485 (절연)</td><td>Modbus RTU 9,600/19,200bps</td></tr>
+              <tr><th scope="row">무선</th><td>SoC ↔ Wi-Fi / BT</td><td>SDIO 3.0 · UART(HCI)</td><td>~100MB/s · 3Mbps</td></tr>
+              <tr><th scope="row">유선</th><td>SoC ↔ GbE PHY</td><td>RGMII + MDIO</td><td>1Gbps</td></tr>
+              <tr><th scope="row">서버 · 앱</th><td>기기 ↔ AWS IoT · 스마트폰</td><td>Wi-Fi/Ethernet · BLE</td><td>MQTT over TLS 8883 · GATT</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note reveal">PoC 단계에서는 Raspberry Pi 5 + Hailo-8L(13 TOPS) + Pi Camera 3 Wide + Pico 2 조합으로 먼저 검증하고, 모델은 최종 i.MX 8M Plus NPU에서 다시 확인합니다(C2PSA 호환성, 실험 E0).</p>
+        <p class="note reveal">요약 출처: 하드웨어 구성 리포트 (report/hardware_report.md). 전압·전류는 부품 계열의 데이터시트 대표값이며 확정 BOM이 아닙니다. 카메라 화각, 에어컨 상태 피드백 경로, 압축기 보호 사양 등 추가 확인 항목은 원문에서 볼 수 있습니다.</p>
+      </div>
+    </section>
+
     <!-- ===== ROI ===== -->
     <section id="roi">
       <div class="wrap">
@@ -1580,8 +1713,9 @@
         '영상은 어디에 저장돼?',
         '왜 몸이 아니라 머리를 세?',
         '투자 회수기간은?',
+        '기기 소비전력은?',
       ];
-      const GREETING = '안녕하세요! OccuCool 소개 자료를 바탕으로 답해 드리는 도우미예요. 작동 방식, AI 모델, 프라이버시, ROI 등 궁금한 점을 물어보세요.';
+      const GREETING = '안녕하세요! OccuCool 소개 자료를 바탕으로 답해 드리는 도우미예요. 작동 방식, AI 모델, 하드웨어, 프라이버시, ROI 등 궁금한 점을 물어보세요.';
 
       const $ = id => document.getElementById(id);
       const fab = $('oc-fab'), panel = $('oc-panel'), body = $('oc-body');
