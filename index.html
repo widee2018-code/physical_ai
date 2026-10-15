@@ -83,6 +83,7 @@
     .brand-mark::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--cool); }
     .nav ul { display: flex; gap: 36px; list-style: none; font-size: 15px; color: #A5B0C2; }
     .nav ul a:hover { color: #fff; }
+    @media (max-width: 1280px) { .nav ul { gap: 20px; font-size: 14px; } }
     .nav .btn { height: 40px; padding: 0 18px; font-size: 14px; }
 
     /* ----- 첫 화면 ----- */
@@ -574,6 +575,7 @@
         <li><a href="#postprocess">후처리</a></li>
         <li><a href="#model">AI 모델</a></li>
         <li><a href="#vlm">비전 도구</a></li>
+        <li><a href="#engine">추론 엔진</a></li>
         <li><a href="#privacy">프라이버시</a></li>
         <li><a href="#metrics">성능 지표</a></li>
         <li><a href="#hardware">하드웨어</a></li>
@@ -1179,6 +1181,44 @@
       </div>
     </section>
 
+    <!-- ===== 추론 엔진 (report/inference_engine_report.md 요약) ===== -->
+    <section id="engine">
+      <div class="wrap">
+        <div class="head-row reveal">
+          <div>
+            <span class="kicker">Inference Engine</span>
+            <h2 class="title">CPU 속도는 비슷하니,<br>NPU를 쓸 수 있는 엔진으로</h2>
+          </div>
+          <p class="intro">같은 YOLO26n을 네 엔진으로 실행해 비교했습니다. 4스레드에서는 세 엔진이 사실상 동률이라, <b>i.MX 8M Plus NPU를 공식 지원하는 TFLite INT8</b>을 배포 엔진으로 정합니다.</p>
+        </div>
+
+        <!-- 핵심 수치 -->
+        <div class="kpi-grid num reveal">
+          <div class="kpi"><small>배포</small><b>TFLite</b><h3>INT8 + NPU 델리게이트</h3><p>NXP eIQ 공식 경로, index.html 배포 사양과 일치</p></div>
+          <div class="kpi"><small>4스레드 추론</small><b>36.8<em>ms</em></b><h3>TFLite p50</h3><p>1위 NCNN(35.8ms)과 1ms 차이</p></div>
+          <div class="kpi"><small>스레드 설정</small><b>−39<em>%</em></b><h3>TFLite 지연 감소</h3><p>기본 60.5ms → 4스레드 36.8ms</p></div>
+          <div class="kpi"><small>출력 일치도</small><b>0.003<em>px</em></b><h3>ONNX Runtime 대비</h3><p>FP32라 사실상 동일 (FP16 엔진은 32~40px)</p></div>
+        </div>
+
+        <!-- 엔진 비교 -->
+        <h3 class="sub-head reveal"><small>엔진 비교</small>Apple M4 · 640px · 4스레드 · 300회 측정</h3>
+        <div class="table-scroll reveal">
+          <table class="compare">
+            <thead>
+              <tr><th scope="col">엔진</th><th scope="col">추론 p50 / p95</th><th scope="col">i.MX 8M Plus NPU</th><th scope="col">판단</th></tr>
+            </thead>
+            <tbody>
+              <tr class="us"><th scope="row">TFLite (LiteRT) <span>채택</span></th><td>36.8 / 44.3ms</td><td>공식 지원 (VX 델리게이트)</td><td>최종 배포. num_threads 명시 필수</td></tr>
+              <tr><th scope="row">ONNX Runtime</th><td>37.7 / 50.3ms</td><td>제한적</td><td>기준 모델 · 정합성 검증 · Hailo-8L PoC 입력</td></tr>
+              <tr><th scope="row">NCNN</th><td>35.8 / 43.2ms</td><td>미지원 (CPU만)</td><td>NPU 경로 실패 시 CPU 대체 후보</td></tr>
+              <tr><th scope="row">OpenVINO</th><td>54.2 / 61.2ms</td><td>미지원 (인텔 전용)</td><td>가장 느리고 ARM에서 이점 없음. 제외</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note reveal">요약 출처: 추론 엔진 선정 리포트 (report/inference_engine_report.md). Apple M4 CPU에서 잰 값이라 Cortex-A53·NPU 실기기와는 다르며, 최종 확정은 i.MX 8M Plus 실험 E0에서 합니다.</p>
+      </div>
+    </section>
+
     <!-- ===== 하루 시나리오 ===== -->
     <section class="dark" id="day">
       <div class="wrap scenario">
@@ -1701,7 +1741,7 @@
   </div>
   <script>
     // ===== RAG 챗봇 =====
-    // 질문 → Supabase Edge Function(occucool-chat) → occucool 테이블 벡터 검색 → Gemini 답변
+    // 질문 → Supabase Edge Function(occucool-chat) → 섹션별 테이블(occucool_kb 파티션) 벡터 검색 → Gemini 답변
     // Gemini API 키는 서버(Edge Function)에만 있고, 여기 있는 anon 키는 공개용입니다.
     (() => {
       const SUPABASE_URL = 'https://cbodqcxebmrrrrqudqsp.supabase.co';
@@ -1764,8 +1804,9 @@
         box.className = 'oc-sources';
         sources.forEach(s => {
           const a = document.createElement('a');
-          const anchor = (s.source || '').match(/index\.html#([\w-]+)/);
-          a.href = anchor ? `#${anchor[1]}` : '#';
+          // anchor: occucool_sections 에 등록된 섹션 앵커 (없으면 source 에서 추출)
+          const anchor = s.anchor || (s.source || '').match(/index\.html#([\w-]+)/)?.[1];
+          a.href = anchor && document.getElementById(anchor) ? `#${anchor}` : '#';
           a.title = `${s.section} · ${s.title}`;
           a.innerHTML = `<b>${s.ref}</b>${esc(s.section)} · ${esc(s.title)}`;
           a.addEventListener('click', () => { if (window.matchMedia('(max-width: 720px)').matches) toggle(false); });
