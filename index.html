@@ -83,7 +83,8 @@
     .brand-mark::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--cool); }
     .nav ul { display: flex; gap: 36px; list-style: none; font-size: 15px; color: #A5B0C2; }
     .nav ul a:hover { color: #fff; }
-    @media (max-width: 1280px) { .nav ul { gap: 20px; font-size: 14px; } }
+    @media (max-width: 1440px) { .nav ul { gap: 22px; } }
+    @media (max-width: 1280px) { .nav ul { gap: 14px; font-size: 13px; } }
     .nav .btn { height: 40px; padding: 0 18px; font-size: 14px; }
 
     /* ----- 첫 화면 ----- */
@@ -579,6 +580,8 @@
         <li><a href="#privacy">프라이버시</a></li>
         <li><a href="#metrics">성능 지표</a></li>
         <li><a href="#hardware">하드웨어</a></li>
+        <li><a href="#parts">부품 선정</a></li>
+        <li><a href="#containers">컨테이너</a></li>
         <li><a href="#roi">ROI</a></li>
       </ul>
       <a class="btn btn-light" href="#contact">파일럿 문의</a>
@@ -1506,6 +1509,106 @@
         </div>
         <p class="note reveal">PoC 단계에서는 Raspberry Pi 5 + Hailo-8L(13 TOPS) + Pi Camera 3 Wide + Pico 2 조합으로 먼저 검증하고, 모델은 최종 i.MX 8M Plus NPU에서 다시 확인합니다(C2PSA 호환성, 실험 E0).</p>
         <p class="note reveal">요약 출처: 하드웨어 구성 리포트 (report/hardware_report.md). 전압·전류는 부품 계열의 데이터시트 대표값이며 확정 BOM이 아닙니다. 카메라 화각, 에어컨 상태 피드백 경로, 압축기 보호 사양 등 추가 확인 항목은 원문에서 볼 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- ===== 부품 선정 (MCU · SBC) ===== -->
+    <section id="parts">
+      <div class="wrap">
+        <div class="head-row reveal">
+          <div>
+            <span class="kicker">Parts selection</span>
+            <h2 class="title">TOPS보다 호환성,<br>성능보다 오래 버티는 칩으로</h2>
+          </div>
+          <p class="intro">SoC 9종과 MCU 7종을 전력 · 성능 · 무선 · 실시간 · 자료 · 생태계로 비교했습니다. YOLO11n 5fps에는 2 TOPS급이면 충분해서, <b>NPU 연산자 호환성과 장기 공급</b>을 기준으로 골랐습니다.</p>
+        </div>
+
+        <!-- 핵심 수치 -->
+        <div class="kpi-grid num reveal">
+          <div class="kpi"><small>메인 SoC</small><b>i.MX 8M Plus</b><h3>양산 SoM</h3><p>NPU 2.3 TOPS · ISP 2개 · 15년 공급 프로그램</p></div>
+          <div class="kpi"><small>서브 MCU</small><b>STM32G0B1</b><h3>보드 내 안전 제어</h3><p>UART 6개 이상 · 타이머 · ADC · 10년 공급 보증</p></div>
+          <div class="kpi"><small>센서 노드</small><b>ESP32-C6</b><h3>내벽 온습도 모듈</h3><p>Wi-Fi 6 · BLE · 저가 인증 모듈</p></div>
+          <div class="kpi"><small>평상시 전력</small><b>~5<em>W</em></b><h3>SoM + MCU + 무선</h3><p>PoE 802.3af 예산 안, 무팬 밀폐 케이스</p></div>
+        </div>
+
+        <!-- SoC 비교 -->
+        <h3 class="sub-head reveal"><small>메인 SoC 비교</small>OccuCool 요구사항 기준 상대 평가</h3>
+        <div class="table-scroll reveal">
+          <table class="compare">
+            <thead>
+              <tr><th scope="col">후보</th><th scope="col">NPU · ISP</th><th scope="col">전력 (부하)</th><th scope="col">실시간 코어</th><th scope="col">자료 · 생태계</th><th scope="col">판단</th></tr>
+            </thead>
+            <tbody>
+              <tr class="us"><th scope="row">NXP i.MX 8M Plus <span>추천</span></th><td>2.3 TOPS · ISP 2개</td><td>약 2~4W</td><td>내장 M7 (+외부 MCU)</td><td>문서 공개 · SoM 다수 · Yocto</td><td>TFLite INT8 배포 사양과 그대로 일치</td></tr>
+              <tr><th scope="row">TI AM62A7</th><td>2 TOPS · RGB-IR ISP</td><td>약 2W</td><td>R5F</td><td>문서 공개 · Edge AI SDK</td><td>1순위 대안 (전력이 빠듯할 때)</td></tr>
+              <tr><th scope="row">NXP i.MX 95</th><td>2 TOPS · ISP</td><td>8M Plus보다 높음</td><td>M7 + M33</td><td>SoM 다수 · 사례 적음</td><td>차세대(v2) 후보</td></tr>
+              <tr><th scope="row">Rockchip RK3576</th><td>6 TOPS · ISP</td><td>약 3~6W</td><td>M0</td><td>문서·장기 공급 자료 부족</td><td>원가 절감판 후보</td></tr>
+              <tr><th scope="row">Raspberry Pi 5 + Hailo-8L</th><td>13 TOPS · Pi ISP</td><td>약 8~12W</td><td>없음</td><td>자료·커뮤니티 최다</td><td>PoC 전용</td></tr>
+              <tr><th scope="row">i.MX 93 · Jetson Orin Nano</th><td>0.5 TOPS · ISP 없음 / GPU</td><td>매우 낮음 / 7~15W</td><td>M33 / 없음</td><td>—</td><td>제외 (부족 / 과잉)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- MCU 비교 -->
+        <h3 class="sub-head reveal"><small>MCU 비교</small>연산보다 UART 수·타이머·예측 가능한 동작</h3>
+        <div class="table-scroll reveal">
+          <table class="compare">
+            <thead>
+              <tr><th scope="col">후보</th><th scope="col">코어</th><th scope="col">강점</th><th scope="col">약점</th><th scope="col">용도</th></tr>
+            </thead>
+            <tbody>
+              <tr class="us"><th scope="row">STM32G0B1 <span>추천</span></th><td>M0+ 64MHz</td><td>UART 다수 · 저가 · CubeMX 예제 최다</td><td>보안 기능 단순</td><td>보드 내 서브 MCU</td></tr>
+              <tr><th scope="row">STM32U5</th><td>M33 160MHz</td><td>TrustZone · 초저전력</td><td>단가 2~3배</td><td>보안 강화판 · ToF/열화상 단독 제품</td></tr>
+              <tr><th scope="row">NXP MCX A153</th><td>M33 96MHz</td><td>SoC와 같은 벤더</td><td>신규 제품군</td><td>단일 벤더 지원을 원할 때</td></tr>
+              <tr><th scope="row">ESP32-C6</th><td>RISC-V 160MHz</td><td>Wi-Fi 6 · BLE · 802.15.4 내장</td><td>Wi-Fi 동작 중 지연 편차</td><td>원격 온습도 센서 노드</td></tr>
+              <tr><th scope="row">nRF54L15</th><td>M33 128MHz</td><td>BLE 저전력 최상</td><td>Wi-Fi 없음</td><td>배터리형 센서 노드</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note reveal">무선은 NXP IW612 기반 모듈(u-blox MAYA-W2 등, Wi-Fi 6 + BLE 5.2 + 802.15.4)을 권장합니다. 페어링용 BLE는 5.2로도 충분하지만, 5.4 표기를 유지하려면 5.4 인증 모듈을 골라야 합니다. YOLO11n의 C2PSA가 NPU에서 돌지 않으면 YOLOv8n → TI AM62A7 순서로 대응합니다(실험 E0).</p>
+        <p class="note reveal">요약 출처: MCU · SBC 선정 리포트 (report/mcu_sbc_selection_report.md). 전력·성능 값은 제조사 공개 자료 기준 추정치이며, 단가와 실기기 검증 계획(H1~H7)은 원문에서 볼 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- ===== 컨테이너 구조 ===== -->
+    <section class="gray" id="containers">
+      <div class="wrap">
+        <div class="head-row reveal">
+          <div>
+            <span class="kicker">Edge software</span>
+            <h2 class="title">영상은 한 컨테이너 안에 가두고,<br>장애는 번지지 않게 나눕니다</h2>
+          </div>
+          <p class="intro">SoC 위에 상시 컨테이너 6개와 설치용 1개를 둡니다. 영상을 다루는 컨테이너에는 <b>네트워크도, 쓰기 가능한 디스크도 없어</b> "영상을 안 보낸다"가 구조로 보장됩니다. 안전 규칙은 컨테이너가 아니라 MCU 펌웨어에 남깁니다.</p>
+        </div>
+
+        <!-- 핵심 수치 -->
+        <div class="kpi-grid num reveal">
+          <div class="kpi"><small>상시 컨테이너</small><b>6<em>개</em></b><h3>+ 설치용 1개</h3><p>기능 경계별 분리, 단계별로 쪼개지 않음</p></div>
+          <div class="kpi"><small>메모리 예산</small><b>~1.27<em>GB</em></b><h3>LPDDR4 2GB 중</h3><p>컨테이너별 상한 · 약 700MB 여유</p></div>
+          <div class="kpi"><small>외부 통신</small><b>1<em>개</em></b><h3>uplink만 8883</h3><p>나머지는 네트워크 없음</p></div>
+          <div class="kpi"><small>런타임</small><b>Podman</b><h3>systemd Quadlet</h3><p>Yocto · 읽기 전용 rootfs · A/B 업데이트</p></div>
+        </div>
+
+        <!-- 컨테이너 구성 -->
+        <h3 class="sub-head reveal"><small>컨테이너 구성</small>브로커 하나로만 연결합니다</h3>
+        <div class="table-scroll reveal">
+          <table class="compare">
+            <thead>
+              <tr><th scope="col">컨테이너</th><th scope="col">맡는 일</th><th scope="col">네트워크</th><th scope="col">장애 시</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">occu-broker</th><td>기기 내부 메시지 버스 (Mosquitto, Unix 소켓 + ACL)</td><td>없음</td><td>가장 먼저 재시작, 자동 재연결</td></tr>
+              <tr class="us"><th scope="row">occu-vision <span>격리</span></th><td>캡처 → NPU 추론 → 추적 → 인원수 (V1~V7, D1~D5)</td><td>없음</td><td>control이 결측 규칙으로 재실 유지</td></tr>
+              <tr><th scope="row">occu-control</th><td>센서 정제 · 재실 판정 · 제어 결정 (S · A · V9 · C1 · K · G1)</td><td>없음</td><td>스냅샷 복원, 모르면 재실로 시작</td></tr>
+              <tr><th scope="row">occu-deviceio</th><td>MCU UART 링크 · 하트비트 · BACnet/IP</td><td>사내망(BACnet)만</td><td>MCU가 안전 모드 진입</td></tr>
+              <tr><th scope="row">occu-uplink</th><td>외부 전송 검사(L1) · 오프라인 버퍼(N2) · AWS IoT</td><td>외부 8883만</td><td>버퍼에 저장 후 순서대로 재전송</td></tr>
+              <tr><th scope="row">occu-insight</th><td>알림 정리 · KPI · 오작동 의심 구간 (N1 · L2 · L3)</td><td>없음</td><td>메모리 부족 시 가장 먼저 종료</td></tr>
+              <tr><th scope="row">occu-provision</th><td>BLE 페어링 · Wi-Fi 설정 · ROI/Homography 보정</td><td>BLE</td><td>설치 모드에서만 실행</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note reveal">영상이 밖으로 나가려면 vision의 네트워크 격리, 브로커 ACL·메시지 크기 제한, L1 스키마 검사 세 겹을 모두 넘어야 합니다. 모델은 이미지와 분리해 서명 검증 후 교체하고, 업데이트가 헬스 게이트를 통과하지 못하면 이전 버전으로 자동 롤백합니다. PoC(Pi 5 + Hailo)에서는 vision 이미지만 바꿔 같은 구조를 씁니다.</p>
+        <p class="note reveal">요약 출처: SBC 컨테이너 구조 설계 리포트 (report/sbc_container_report.md). 메모리·CPU·파티션 수치는 초기 추정치이며, 내부 토픽 설계와 Compose 예시는 원문에서 볼 수 있습니다.</p>
       </div>
     </section>
 
