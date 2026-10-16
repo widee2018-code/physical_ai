@@ -76,16 +76,78 @@
       transition: background .3s, border-color .3s;
       border-bottom: 1px solid transparent;
     }
-    header.scrolled { background: rgba(7, 13, 24, .82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-color: var(--night-line); }
-    .nav { height: 72px; display: flex; align-items: center; justify-content: space-between; color: #fff; }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: -.02em; }
+    header.scrolled, header.open { background: rgba(7, 13, 24, .86); backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); border-color: var(--night-line); }
+    header.open { z-index: 70; }
+    .nav { height: 72px; display: flex; align-items: center; gap: 32px; color: #fff; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: -.02em; flex-shrink: 0; }
     .brand-mark { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--cool); display: grid; place-items: center; }
     .brand-mark::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--cool); }
-    .nav ul { display: flex; gap: 36px; list-style: none; font-size: 15px; color: #A5B0C2; }
-    .nav ul a:hover { color: #fff; }
-    @media (max-width: 1440px) { .nav ul { gap: 22px; } }
-    @media (max-width: 1280px) { .nav ul { gap: 14px; font-size: 13px; } }
+    .brand small { margin-left: 2px; padding: 2px 8px; border: 1px solid var(--night-line); border-radius: 999px; font-size: 11px; font-weight: 600; color: var(--mute); letter-spacing: .04em; }
+
+    .menu { display: flex; align-items: center; gap: 4px; list-style: none; margin: 0 auto; }
+    .menu > li { position: relative; }
+    .menu-top {
+      display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px;
+      border: 0; border-radius: 10px; background: none; font: inherit; font-size: 15px; font-weight: 500;
+      color: #A5B0C2; cursor: pointer; transition: color .2s, background .2s;
+    }
+    .menu-top:hover, .menu > li.show > .menu-top { color: #fff; background: rgba(255, 255, 255, .06); }
+    .menu-top.active { color: #fff; }
+    .menu-top.active::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: -16px; height: 2px; border-radius: 2px; background: var(--cool); }
+    .menu-top .caret { width: 10px; height: 10px; transition: transform .2s; opacity: .7; }
+    .menu > li.show .caret { transform: rotate(180deg); }
+
+    .dropdown {
+      position: absolute; top: calc(100% + 14px); left: 50%; width: 340px; padding: 8px;
+      background: var(--night-2); border: 1px solid var(--night-line); border-radius: 16px;
+      box-shadow: 0 24px 48px -12px rgba(0, 0, 0, .55);
+      opacity: 0; visibility: hidden; transform: translate(-50%, -6px); transition: opacity .18s, transform .18s, visibility .18s;
+    }
+    .dropdown::before { content: ""; position: absolute; inset: -16px 0 auto; height: 16px; }
+    .menu > li.show .dropdown { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+    .dropdown a { display: grid; grid-template-columns: 28px 1fr; gap: 2px 12px; padding: 12px; border-radius: 10px; transition: background .15s; }
+    .dropdown a:hover, .dropdown a:focus-visible { background: rgba(56, 189, 248, .08); }
+    .dropdown a i { grid-row: span 2; font-style: normal; font-size: 12px; font-weight: 700; color: var(--mute); padding-top: 2px; font-variant-numeric: tabular-nums; }
+    .dropdown a b { font-size: 15px; font-weight: 600; color: #E8EDF5; }
+    .dropdown a span { font-size: 13px; color: var(--mute); line-height: 1.5; }
+    .dropdown a.current b { color: var(--cool); }
+    .dropdown a.current i { color: var(--cool); }
+
+    .nav-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .nav .btn { height: 40px; padding: 0 18px; font-size: 14px; }
+    .menu-toggle {
+      display: none; width: 40px; height: 40px; border: 1px solid var(--night-line); border-radius: 10px;
+      background: none; color: #fff; cursor: pointer; place-items: center;
+    }
+    .menu-toggle svg { width: 18px; height: 18px; }
+    .menu-toggle .i-close, header.open .menu-toggle .i-open { display: none; }
+    header.open .menu-toggle .i-close { display: block; }
+
+    .progress { position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, var(--cool-deep), var(--cool)); }
+
+    /* 모바일 메뉴 */
+    .sheet { display: none; }
+    @media (max-width: 1080px) {
+      .nav { justify-content: space-between; }
+      .menu { display: none; }
+      .menu-toggle { display: grid; }
+      .sheet {
+        position: absolute; top: 100%; left: 0; right: 0; height: calc(100vh - 72px); height: calc(100dvh - 72px); overflow-y: auto; padding: 8px 16px 40px;
+        background: var(--night); border-top: 1px solid var(--night-line);
+      }
+      header.open .sheet { display: block; }
+      .sheet section { padding: 20px 0; border-bottom: 1px solid var(--night-line); }
+      .sheet h4 { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--cool); margin-bottom: 8px; }
+      .sheet ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; }
+      .sheet a { display: block; padding: 10px 0; font-size: 16px; color: #E8EDF5; }
+      .sheet a.current { color: var(--cool); }
+      .sheet .btn { margin-top: 24px; width: 100%; justify-content: center; }
+    }
+    @media (min-width: 1081px) and (max-width: 1240px) {
+      .menu-top { padding: 0 10px; font-size: 14px; }
+      .nav { gap: 16px; }
+    }
+    body.menu-lock { overflow: hidden; }
 
     /* ----- 첫 화면 ----- */
     .hero {
@@ -384,6 +446,76 @@
     footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     footer .brand { color: #fff; font-size: 16px; }
 
+    /* ----- 파일럿 문의 ----- */
+    .contact { display: grid; grid-template-columns: 1fr 1.15fr; gap: 64px; align-items: start; }
+    .contact-info .intro { margin-top: 18px; }
+    .steps { margin-top: 40px; list-style: none; display: grid; gap: 0; counter-reset: step; }
+    .steps li { position: relative; display: grid; grid-template-columns: 40px 1fr; gap: 16px; padding-bottom: 24px; }
+    .steps li::before {
+      counter-increment: step; content: counter(step, decimal-leading-zero);
+      width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: #fff;
+      display: grid; place-items: center; font-size: 13px; font-weight: 700; color: var(--cool-deep); font-variant-numeric: tabular-nums;
+    }
+    .steps li:not(:last-child)::after { content: ""; position: absolute; left: 19.5px; top: 44px; bottom: 4px; width: 1px; background: var(--line); }
+    .steps b { display: block; font-size: 16px; padding-top: 8px; }
+    .steps span { font-size: 14px; color: var(--sub); }
+    .includes { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .includes span { padding: 6px 12px; border-radius: 999px; background: var(--paper-2); border: 1px solid var(--line); font-size: 13px; color: var(--sub); }
+
+    .form-card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 36px; box-shadow: 0 24px 48px -28px rgba(11, 18, 32, .18); }
+    .form-card h3 { font-size: 20px; letter-spacing: -.02em; }
+    .form-card form > p { margin-top: 4px; font-size: 14px; color: var(--mute); }
+    .form-grid { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 16px; }
+    .form-grid .full { grid-column: 1 / -1; }
+    .fld label, .fld legend { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--sub); }
+    .fld label em, .fld legend em { font-style: normal; color: var(--warm); margin-left: 2px; }
+    .fld input, .fld select, .fld textarea {
+      width: 100%; height: 46px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px;
+      background: #fff; font: inherit; font-size: 15px; color: var(--ink); transition: border-color .15s, box-shadow .15s;
+    }
+    .fld textarea { height: 112px; padding: 12px 14px; resize: vertical; line-height: 1.6; }
+    .fld select { appearance: none; -webkit-appearance: none; padding-right: 36px; cursor: pointer;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 3.5l3 3 3-3' fill='none' stroke='%238A94A6' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 14px center; }
+    .fld input::placeholder, .fld textarea::placeholder { color: #A9B1BF; }
+    .fld input:focus, .fld select:focus, .fld textarea:focus { outline: none; border-color: var(--cool-deep); box-shadow: 0 0 0 3px rgba(56, 189, 248, .18); }
+    .fld.invalid input, .fld.invalid select { border-color: #E5484D; }
+    .fld .err { display: none; margin-top: 6px; font-size: 12px; color: #E5484D; }
+    .fld.invalid .err { display: block; }
+    fieldset.fld { border: 0; min-width: 0; }
+    .seg { display: flex; flex-wrap: wrap; gap: 8px; }
+    .seg label { margin: 0; }
+    .seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .seg span {
+      display: inline-flex; align-items: center; height: 38px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px;
+      font-size: 14px; font-weight: 500; color: var(--sub); cursor: pointer; transition: all .15s;
+    }
+    .seg span:hover { border-color: #C5CBD5; }
+    .seg input:checked + span { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .seg input:focus-visible + span { outline: 2px solid var(--cool); outline-offset: 2px; }
+    .consent { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--sub); cursor: pointer; }
+    .consent input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--cool-deep); flex-shrink: 0; }
+    .consent.invalid { color: #E5484D; }
+    .form-foot { margin-top: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .form-foot small { font-size: 12px; color: var(--mute); }
+    .form-foot .btn { height: 48px; border: 0; cursor: pointer; font-family: inherit; }
+    .form-done { display: none; text-align: center; padding: 40px 8px; }
+    .form-card.sent form { display: none; }
+    .form-card.sent .form-done { display: block; }
+    .form-done .ok { width: 56px; height: 56px; margin: 0 auto 20px; border-radius: 50%; background: rgba(52, 211, 153, .14); color: #059669; display: grid; place-items: center; }
+    .form-done h3 { font-size: 22px; }
+    .form-done p { margin-top: 8px; color: var(--sub); font-size: 15px; }
+    .form-done pre { margin: 20px 0 0; padding: 16px; text-align: left; white-space: pre-wrap; background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; font: 13px/1.7 inherit; font-family: inherit; color: var(--sub); }
+    .form-done .actions { margin-top: 20px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .form-done .btn { height: 44px; font-size: 14px; cursor: pointer; border: 1px solid var(--line); font-family: inherit; }
+    .btn-ghost { background: #fff; color: var(--ink); }
+    .btn-ghost:hover { border-color: var(--ink); }
+    @media (max-width: 1080px) { .contact { grid-template-columns: 1fr; gap: 48px; } }
+    @media (max-width: 720px) {
+      .form-card { padding: 24px 20px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-foot .btn { width: 100%; justify-content: center; }
+    }
+
     /* ----- 스크롤 등장 효과 ----- */
     .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
     .reveal.in { opacity: 1; transform: none; }
@@ -407,7 +539,6 @@
       .stat { padding: 32px 24px; border-bottom: 1px solid var(--night-line); }
       .stat:nth-child(odd) { padding-left: 0; }
       .stat:nth-child(2n) { border-right: 0; }
-      .nav ul { display: none; }
     }
 
     /* ----- 모바일 ----- */
@@ -436,7 +567,7 @@
       .rule-list em { grid-column: 2; }
       .panel, .calc { padding: 24px; }
       .calc .big b { font-size: 38px; }
-      .nav .btn { display: none; }
+      .nav-actions .btn { display: none; }
       .premise .panel { grid-template-columns: 1fr; gap: 12px; }
       .sub-head { margin-top: 56px; }
       .tech-list li { grid-template-columns: 1fr; gap: 6px; }
@@ -568,24 +699,107 @@
   <!-- ===== 상단 메뉴 ===== -->
   <header id="top">
     <nav class="wrap nav" aria-label="주 메뉴">
-      <a class="brand" href="#"><span class="brand-mark"></span>OccuCool</a>
-      <ul>
-        <li><a href="#problem">문제</a></li>
-        <li><a href="#how">작동 방식</a></li>
-        <li><a href="#preprocess">전처리</a></li>
-        <li><a href="#postprocess">후처리</a></li>
-        <li><a href="#model">AI 모델</a></li>
-        <li><a href="#vlm">비전 도구</a></li>
-        <li><a href="#engine">추론 엔진</a></li>
-        <li><a href="#privacy">프라이버시</a></li>
-        <li><a href="#metrics">성능 지표</a></li>
-        <li><a href="#hardware">하드웨어</a></li>
-        <li><a href="#parts">부품 선정</a></li>
-        <li><a href="#containers">컨테이너</a></li>
-        <li><a href="#roi">ROI</a></li>
+      <a class="brand" href="#hero"><span class="brand-mark"></span>OccuCool<small>v1</small></a>
+      <ul class="menu">
+        <li data-group="product">
+          <button class="menu-top" type="button" aria-expanded="false" aria-controls="dd-product">제품<svg class="caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <ul class="dropdown" id="dd-product" role="list" style="list-style:none">
+              <li><a href="#problem"><i>01</i><b>문제</b><span>기존 냉난방 제어의 한계</span></a></li>
+              <li><a href="#how"><i>02</i><b>작동 방식</b><span>감지에서 확인까지 10초 제어 루프</span></a></li>
+              <li><a href="#day"><i>03</i><b>하루 시나리오</b><span>사무실의 하루 흐름</span></a></li>
+              <li><a href="#spaces"><i>04</i><b>적용 공간</b><span>사무실 · 학교 · 공공시설</span></a></li>
+          </ul>
+        </li>
+        <li data-group="ai">
+          <button class="menu-top" type="button" aria-expanded="false" aria-controls="dd-ai">AI 기술<svg class="caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <ul class="dropdown" id="dd-ai" role="list" style="list-style:none">
+              <li><a href="#preprocess"><i>01</i><b>전처리</b><span>데이터 소스별 정제 파이프라인</span></a></li>
+              <li><a href="#postprocess"><i>02</i><b>후처리</b><span>판단 검증과 서비스 전달</span></a></li>
+              <li><a href="#model"><i>03</i><b>AI 모델</b><span>YOLO11n 머리 검출 · 학습 전략</span></a></li>
+              <li><a href="#vlm"><i>04</i><b>비전 도구</b><span>라벨링 · 데이터 선별용 모델</span></a></li>
+              <li><a href="#engine"><i>05</i><b>추론 엔진</b><span>TFLite INT8 + NPU</span></a></li>
+          </ul>
+        </li>
+        <li data-group="system">
+          <button class="menu-top" type="button" aria-expanded="false" aria-controls="dd-system">시스템<svg class="caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <ul class="dropdown" id="dd-system" role="list" style="list-style:none">
+              <li><a href="#tech"><i>01</i><b>기술 구성</b><span>디바이스부터 클라우드까지</span></a></li>
+              <li><a href="#hardware"><i>02</i><b>하드웨어</b><span>SoC와 MCU 역할 분담</span></a></li>
+              <li><a href="#parts"><i>03</i><b>부품 선정</b><span>MCU · SBC 비교와 추천</span></a></li>
+              <li><a href="#containers"><i>04</i><b>컨테이너</b><span>SBC 엣지 소프트웨어 구조</span></a></li>
+          </ul>
+        </li>
+        <li data-group="trust">
+          <button class="menu-top" type="button" aria-expanded="false" aria-controls="dd-trust">신뢰성<svg class="caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <ul class="dropdown" id="dd-trust" role="list" style="list-style:none">
+              <li><a href="#privacy"><i>01</i><b>프라이버시</b><span>영상은 남기지 않습니다</span></a></li>
+              <li><a href="#metrics"><i>02</i><b>성능 지표</b><span>숫자로 약속하고 로그로 검증</span></a></li>
+          </ul>
+        </li>
+        <li data-group="adopt">
+          <button class="menu-top" type="button" aria-expanded="false" aria-controls="dd-adopt">도입<svg class="caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <ul class="dropdown" id="dd-adopt" role="list" style="list-style:none">
+              <li><a href="#roi"><i>01</i><b>ROI 계산기</b><span>투자 회수기간 시뮬레이션</span></a></li>
+              <li><a href="#roadmap"><i>02</i><b>로드맵</b><span>파일럿에서 확대까지</span></a></li>
+              <li><a href="#contact"><i>03</i><b>파일럿 문의</b><span>설치 가능 여부 · 절감률 검토</span></a></li>
+          </ul>
+        </li>
       </ul>
-      <a class="btn btn-light" href="#contact">파일럿 문의</a>
+      <div class="nav-actions">
+        <a class="btn btn-light" href="#contact">파일럿 문의</a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="sheet" aria-label="메뉴 열기">
+          <svg class="i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          <svg class="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
     </nav>
+    <div class="sheet" id="sheet" aria-label="모바일 메뉴">
+      <section>
+        <h4>제품</h4>
+        <ul>
+          <li><a href="#problem">문제</a></li>
+          <li><a href="#how">작동 방식</a></li>
+          <li><a href="#day">하루 시나리오</a></li>
+          <li><a href="#spaces">적용 공간</a></li>
+        </ul>
+      </section>
+      <section>
+        <h4>AI 기술</h4>
+        <ul>
+          <li><a href="#preprocess">전처리</a></li>
+          <li><a href="#postprocess">후처리</a></li>
+          <li><a href="#model">AI 모델</a></li>
+          <li><a href="#vlm">비전 도구</a></li>
+          <li><a href="#engine">추론 엔진</a></li>
+        </ul>
+      </section>
+      <section>
+        <h4>시스템</h4>
+        <ul>
+          <li><a href="#tech">기술 구성</a></li>
+          <li><a href="#hardware">하드웨어</a></li>
+          <li><a href="#parts">부품 선정</a></li>
+          <li><a href="#containers">컨테이너</a></li>
+        </ul>
+      </section>
+      <section>
+        <h4>신뢰성</h4>
+        <ul>
+          <li><a href="#privacy">프라이버시</a></li>
+          <li><a href="#metrics">성능 지표</a></li>
+        </ul>
+      </section>
+      <section>
+        <h4>도입</h4>
+        <ul>
+          <li><a href="#roi">ROI 계산기</a></li>
+          <li><a href="#roadmap">로드맵</a></li>
+          <li><a href="#contact">파일럿 문의</a></li>
+        </ul>
+      </section>
+      <a class="btn btn-light" href="#contact">파일럿 문의</a>
+    </div>
+    <div class="progress" aria-hidden="true"></div>
   </header>
 
   <main>
@@ -1703,8 +1917,106 @@
       </div>
     </section>
 
+    <!-- ===== 파일럿 문의 ===== -->
+    <section id="contact">
+      <div class="wrap contact">
+        <div class="contact-info reveal">
+          <span class="kicker">Pilot program</span>
+          <h2 class="title">한 구역, 한 달이면<br>절감 효과가 보입니다</h2>
+          <p class="intro">공간 정보를 남겨 주시면 설치 가능 여부와 예상 절감률을 검토해 회신드립니다. 파일럿 기간에는 컨트롤러와 리포트를 무상으로 제공합니다.</p>
+          <ol class="steps">
+            <li><div><b>문의 접수</b><span>공간 유형 · 면적 · 에어컨 연동 방식 확인</span></div></li>
+            <li><div><b>현장 확인 · 설치</b><span>천장 설치 위치 점검, 대당 약 30분 설치</span></div></li>
+            <li><div><b>그림자 모드 1~2주</b><span>명령 없이 판단만 기록해 현장 맞춤 튜닝</span></div></li>
+            <li><div><b>파일럿 운영 1개월</b><span>도입 전후 전력량 비교 · 월간 리포트 제공</span></div></li>
+          </ol>
+          <div class="includes" aria-label="파일럿 제공 항목">
+            <span>컨트롤러 1대</span><span>설치 · 보정</span><span>대시보드</span><span>월간 절감 리포트</span>
+          </div>
+        </div>
+
+        <div class="form-card reveal" id="pilot-card">
+          <form id="pilot-form" novalidate>
+            <h3>파일럿 문의</h3>
+            <p>표시(<em style="font-style:normal;color:var(--warm)">*</em>)는 필수 항목입니다. 영업일 기준 2일 안에 회신드립니다.</p>
+            <div class="form-grid">
+              <div class="fld">
+                <label for="pf-name">이름<em>*</em></label>
+                <input id="pf-name" name="name" autocomplete="name" placeholder="홍길동" required>
+                <span class="err">이름을 입력해 주세요.</span>
+              </div>
+              <div class="fld">
+                <label for="pf-org">소속<em>*</em></label>
+                <input id="pf-org" name="org" autocomplete="organization" placeholder="회사 · 학교 · 기관명" required>
+                <span class="err">소속을 입력해 주세요.</span>
+              </div>
+              <div class="fld">
+                <label for="pf-email">이메일<em>*</em></label>
+                <input id="pf-email" name="email" type="email" autocomplete="email" placeholder="name@company.com" required>
+                <span class="err">올바른 이메일 주소를 입력해 주세요.</span>
+              </div>
+              <div class="fld">
+                <label for="pf-phone">연락처</label>
+                <input id="pf-phone" name="phone" type="tel" autocomplete="tel" placeholder="010-0000-0000">
+              </div>
+              <fieldset class="fld full">
+                <legend>공간 유형<em>*</em></legend>
+                <div class="seg">
+                  <label><input type="radio" name="space" value="사무실 · 회의실" checked><span>사무실 · 회의실</span></label>
+                  <label><input type="radio" name="space" value="학교 · 강의실"><span>학교 · 강의실</span></label>
+                  <label><input type="radio" name="space" value="공공시설"><span>공공시설</span></label>
+                  <label><input type="radio" name="space" value="기타"><span>기타</span></label>
+                </div>
+              </fieldset>
+              <div class="fld">
+                <label for="pf-area">대상 면적</label>
+                <select id="pf-area" name="area">
+                  <option>100㎡ 미만</option>
+                  <option selected>100~300㎡</option>
+                  <option>300~1,000㎡</option>
+                  <option>1,000㎡ 이상</option>
+                </select>
+              </div>
+              <div class="fld">
+                <label for="pf-hvac">에어컨 연동 방식</label>
+                <select id="pf-hvac" name="hvac">
+                  <option>잘 모르겠음</option>
+                  <option>벽걸이 · 스탠드 (리모컨 IR)</option>
+                  <option>시스템 에어컨 (RS-485 Modbus)</option>
+                  <option>중앙 제어 (BACnet)</option>
+                </select>
+              </div>
+              <div class="fld full">
+                <label for="pf-msg">문의 내용</label>
+                <textarea id="pf-msg" name="message" placeholder="운영 시간, 구역 수, 현재 냉난방 운영 방식 등을 알려 주시면 검토가 빨라집니다."></textarea>
+              </div>
+              <label class="consent full" id="pf-consent-wrap">
+                <input type="checkbox" id="pf-consent" name="consent">
+                <span>문의 회신을 위한 개인정보(이름 · 소속 · 연락처) 수집과 이용에 동의합니다. 회신 후 6개월 뒤 파기합니다.</span>
+              </label>
+            </div>
+            <div class="form-foot">
+              <small>과제용 가상 제품이라, 보내기를 누르면 메일 앱으로 내용이 전달됩니다.</small>
+              <button class="btn btn-dark" type="submit">문의 보내기 <span aria-hidden="true">→</span></button>
+            </div>
+          </form>
+
+          <div class="form-done" role="status" aria-live="polite">
+            <div class="ok"><svg width="26" height="26"><use href="#i-check"/></svg></div>
+            <h3>문의 내용이 준비됐습니다</h3>
+            <p>메일 앱이 열리지 않으면 아래 내용을 복사해 보내 주세요.</p>
+            <pre id="pf-summary"></pre>
+            <div class="actions">
+              <button class="btn btn-ghost" type="button" id="pf-copy">내용 복사</button>
+              <button class="btn btn-ghost" type="button" id="pf-reset">새로 작성</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== 마지막 안내 ===== -->
-    <section class="cta" id="contact">
+    <section class="cta" id="closing">
       <div class="wrap reveal">
         <h2>에어컨이 사람을 기다리지 않도록.</h2>
         <p>OccuCool은 나만의 피지컬 AI 제품 기획 과제로 설계한 가상 제품입니다. 자세한 요구사항은 PRD 문서에서 볼 수 있습니다.</p>
@@ -1726,9 +2038,59 @@
   <script>
     // ----- 상단 메뉴: 스크롤하면 배경이 생깁니다 -----
     const header = document.getElementById('top');
-    const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 24);
+    const progress = header.querySelector('.progress');
+    const onScroll = () => {
+      header.classList.toggle('scrolled', window.scrollY > 24);
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
+
+    // ----- 상단 메뉴: 드롭다운 (마우스 · 클릭 · 키보드) -----
+    const groups = [...header.querySelectorAll('.menu > li')];
+    const closeAll = except => groups.forEach(g => {
+      if (g === except) return;
+      g.classList.remove('show');
+      g.querySelector('.menu-top').setAttribute('aria-expanded', 'false');
+    });
+    const openGroup = g => { closeAll(g); g.classList.add('show'); g.querySelector('.menu-top').setAttribute('aria-expanded', 'true'); };
+    groups.forEach(g => {
+      const btn = g.querySelector('.menu-top');
+      let timer;
+      g.addEventListener('mouseenter', () => { clearTimeout(timer); openGroup(g); });
+      g.addEventListener('mouseleave', () => { timer = setTimeout(() => closeAll(), 120); });
+      btn.addEventListener('click', () => g.classList.contains('show') ? closeAll() : openGroup(g));
+      g.addEventListener('focusout', e => { if (!g.contains(e.relatedTarget)) closeAll(); });
+    });
+    header.querySelectorAll('.dropdown a').forEach(a => a.addEventListener('click', () => closeAll()));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAll(); setSheet(false); } });
+    document.addEventListener('click', e => { if (!header.contains(e.target)) closeAll(); });
+
+    // ----- 모바일 메뉴 -----
+    const toggle = header.querySelector('.menu-toggle');
+    const setSheet = open => {
+      header.classList.toggle('open', open);
+      document.body.classList.toggle('menu-lock', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+    };
+    toggle.addEventListener('click', () => setSheet(!header.classList.contains('open')));
+    header.querySelectorAll('.sheet a').forEach(a => a.addEventListener('click', () => setSheet(false)));
+    window.addEventListener('resize', () => { if (window.innerWidth > 1080) setSheet(false); });
+
+    // ----- 상단 메뉴: 지금 보고 있는 섹션 표시 -----
+    const navLinks = [...header.querySelectorAll('a[href^="#"]')].filter(a => a.closest('.dropdown, .sheet'));
+    const spySections = [...new Set(navLinks.map(a => a.getAttribute('href').slice(1)))]
+      .map(id => document.getElementById(id)).filter(Boolean);
+    const markCurrent = id => {
+      navLinks.forEach(a => a.classList.toggle('current', a.getAttribute('href') === '#' + id));
+      groups.forEach(g => g.querySelector('.menu-top').classList.toggle('active', !!g.querySelector(`a[href="#${id}"]`)));
+    };
+    const spy = new IntersectionObserver(entries => {
+      entries.forEach(en => { if (en.isIntersecting) markCurrent(en.target.id); });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    spySections.forEach(sec => spy.observe(sec));
 
     // ----- 제어 시뮬레이터 (PRD의 인원별 냉방 기준) -----
     const sim = document.getElementById('sim');
@@ -1811,6 +2173,64 @@
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // ----- 파일럿 문의 폼 -----
+    const CONTACT_EMAIL = 'pilot@occucool.example'; // 실제 받을 주소로 바꿔 주세요
+    const pilotForm = document.getElementById('pilot-form');
+    const pilotCard = document.getElementById('pilot-card');
+    const pfSummary = document.getElementById('pf-summary');
+    const fieldOf = el => el.closest('.fld');
+    const checks = {
+      'pf-name': v => v.trim().length > 0,
+      'pf-org': v => v.trim().length > 0,
+      'pf-email': v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()),
+    };
+    Object.keys(checks).forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('input', () => { if (checks[id](el.value)) fieldOf(el).classList.remove('invalid'); });
+    });
+    const consent = document.getElementById('pf-consent');
+    consent.addEventListener('change', () => consent.checked && document.getElementById('pf-consent-wrap').classList.remove('invalid'));
+
+    pilotForm.addEventListener('submit', e => {
+      e.preventDefault();
+      let first = null;
+      Object.entries(checks).forEach(([id, ok]) => {
+        const el = document.getElementById(id);
+        const bad = !ok(el.value);
+        fieldOf(el).classList.toggle('invalid', bad);
+        if (bad && !first) first = el;
+      });
+      document.getElementById('pf-consent-wrap').classList.toggle('invalid', !consent.checked);
+      if (!first && !consent.checked) first = consent;
+      if (first) { first.focus(); return; }
+
+      const d = new FormData(pilotForm);
+      const lines = [
+        `이름: ${d.get('name').trim()}`,
+        `소속: ${d.get('org').trim()}`,
+        `이메일: ${d.get('email').trim()}`,
+        `연락처: ${d.get('phone').trim() || '-'}`,
+        `공간 유형: ${d.get('space')}`,
+        `대상 면적: ${d.get('area')}`,
+        `에어컨 연동: ${d.get('hvac')}`,
+        `문의 내용: ${d.get('message').trim() || '-'}`,
+      ];
+      const body = lines.join('\n');
+      pfSummary.textContent = body;
+      pilotCard.classList.add('sent');
+      const subject = `[OccuCool 파일럿 문의] ${d.get('org').trim()} · ${d.get('space')}`;
+      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+    document.getElementById('pf-copy').addEventListener('click', async e => {
+      try { await navigator.clipboard.writeText(pfSummary.textContent); e.target.textContent = '복사됨'; }
+      catch { e.target.textContent = '복사 실패 · 직접 선택해 주세요'; }
+      setTimeout(() => { e.target.textContent = '내용 복사'; }, 2000);
+    });
+    document.getElementById('pf-reset').addEventListener('click', () => {
+      pilotForm.reset(); pilotCard.classList.remove('sent');
+      document.getElementById('pf-name').focus();
+    });
   </script>
   <!-- ===== RAG 챗봇: 버튼을 누르면 열립니다 ===== -->
   <button class="oc-fab" id="oc-fab" type="button" aria-expanded="false" aria-controls="oc-panel" aria-label="OccuCool 도우미 열기">
