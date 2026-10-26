@@ -516,6 +516,36 @@
       .form-foot .btn { width: 100%; justify-content: center; }
     }
 
+    /* ----- 관리자 앱 화면 (Stitch 디자인) ----- */
+    .app-shots { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; }
+    .app-shot { margin: 0; scroll-margin-top: 120px; }
+    .phone {
+      position: relative; padding: 8px; border-radius: 30px; background: #0B1424;
+      border: 1px solid var(--night-line); box-shadow: 0 30px 60px -24px rgba(0, 0, 0, .7);
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .phone::before { content: ""; position: absolute; top: 14px; left: 50%; width: 34%; height: 5px; border-radius: 5px; background: #1E2A3D; transform: translateX(-50%); z-index: 2; }
+    .phone .screen { position: relative; aspect-ratio: 390 / 844; border-radius: 22px; overflow: hidden auto; background: #0D131F; scrollbar-width: none; }
+    .phone .screen::-webkit-scrollbar { display: none; }
+    .phone .screen img { display: block; width: 100%; height: auto; }
+    .phone .screen iframe { position: absolute; top: 0; left: 0; width: 390px; height: 844px; border: 0; transform: scale(var(--k, .5)); transform-origin: 0 0; }
+    .app-shot.pick .phone { border-color: rgba(56, 189, 248, .6); box-shadow: 0 0 0 4px rgba(56, 189, 248, .15), 0 30px 60px -24px rgba(0, 0, 0, .7); }
+    .app-shot figcaption { margin-top: 18px; }
+    .app-shot figcaption small { font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--cool); font-variant-numeric: tabular-nums; }
+    .app-shot figcaption h3 { margin-top: 4px; font-size: 17px; color: #fff; letter-spacing: -.02em; }
+    .app-shot figcaption p { margin-top: 6px; font-size: 14px; line-height: 1.55; color: #A5B0C2; }
+    .app-shot figcaption a { display: inline-block; margin-top: 8px; font-size: 13px; color: var(--mute); }
+    .app-shot figcaption a:hover { color: var(--cool); }
+    .app-note { margin-top: 40px; font-size: 14px; color: var(--mute); }
+    @media (max-width: 1080px) {
+      .app-shots { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; margin: 0 -32px; padding-inline: 32px; scroll-padding-inline: 32px; }
+      .app-shot { flex: 0 0 260px; scroll-snap-align: start; }
+    }
+    @media (max-width: 720px) {
+      .app-shots { margin: 0 -16px; padding-inline: 16px; scroll-padding-inline: 16px; }
+      .app-shot { flex-basis: 74vw; max-width: 300px; }
+    }
+
     /* ----- 스크롤 등장 효과 ----- */
     .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
     .reveal.in { opacity: 1; transform: none; }
@@ -710,6 +740,16 @@
               <li><a href="#spaces"><i>04</i><b>적용 공간</b><span>사무실 · 학교 · 공공시설</span></a></li>
           </ul>
         </li>
+        <li data-group="app">
+          <button class="menu-top" type="button" aria-expanded="false" aria-controls="dd-app">앱<svg class="caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <ul class="dropdown" id="dd-app" role="list" style="list-style:none">
+              <li><a href="#app-home"><i>01</i><b>홈 대시보드</b><span>구역별 재실 · 온도 · 절감 현황</span></a></li>
+              <li><a href="#app-zone"><i>02</i><b>구역 상세</b><span>좌석 맵 · AI 판단 · 수동 제어</span></a></li>
+              <li><a href="#app-rules"><i>03</i><b>자동 제어 규칙</b><span>인원 구간별 온도 · 공실 유예</span></a></li>
+              <li><a href="#app-report"><i>04</i><b>에너지 리포트</b><span>기준선 대비 절감 · AI 제안</span></a></li>
+              <li><a href="#app-alerts"><i>05</i><b>알림 센터</b><span>긴급 · 주의 · 정보 알림</span></a></li>
+          </ul>
+        </li>
         <li data-group="ai">
           <button class="menu-top" type="button" aria-expanded="false" aria-controls="dd-ai">AI 기술<svg class="caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <ul class="dropdown" id="dd-ai" role="list" style="list-style:none">
@@ -761,6 +801,16 @@
           <li><a href="#how">작동 방식</a></li>
           <li><a href="#day">하루 시나리오</a></li>
           <li><a href="#spaces">적용 공간</a></li>
+        </ul>
+      </section>
+      <section>
+        <h4>앱</h4>
+        <ul>
+          <li><a href="#app-home">홈 대시보드</a></li>
+          <li><a href="#app-zone">구역 상세</a></li>
+          <li><a href="#app-rules">자동 제어 규칙</a></li>
+          <li><a href="#app-report">에너지 리포트</a></li>
+          <li><a href="#app-alerts">알림 센터</a></li>
         </ul>
       </section>
       <section>
@@ -1515,6 +1565,42 @@
       </div>
     </section>
 
+    <!-- ===== 관리자 앱 (Stitch: OccuCool Smart HVAC App) ===== -->
+    <section class="dark" id="app">
+      <div class="wrap">
+        <div class="head-row reveal">
+          <div>
+            <span class="kicker">Manager app</span>
+            <h2 class="title">현장에 가지 않아도<br>손안에서 확인합니다</h2>
+          </div>
+          <p class="intro">시설 담당자용 모바일 앱입니다. 지금 몇 명이 있고 AI가 왜 그렇게 제어했는지, 얼마나 아꼈는지를 한 화면씩 보여 줍니다. 각 화면 안에서 스크롤해 보세요.</p>
+        </div>
+        <div class="app-shots reveal">
+          <figure class="app-shot" id="app-home">
+            <div class="phone"><div class="screen" tabindex="0" aria-label="홈 대시보드 화면, 스크롤 가능"><img src="images/app/home.png" alt="홈 대시보드: 전체 구역 재실 인원, 오늘 절감률, 구역별 상태 카드" loading="lazy"></div></div>
+            <figcaption><small>01</small><h3>홈 대시보드</h3><p>구역별 재실 인원과 온도, 오늘의 절감률을 한눈에 봅니다.</p><a href="images/app/home.png" target="_blank" rel="noopener">전체 화면 보기 ↗</a></figcaption>
+          </figure>
+          <figure class="app-shot" id="app-zone">
+            <div class="phone"><div class="screen"><iframe src="stitch/occucool-app/zone.html" title="Zone A 사무실 상세 화면" loading="lazy"></iframe></div></div>
+            <figcaption><small>02</small><h3>구역 상세</h3><p>좌석 맵, AI 판단 근거, 수동 제어와 2시간 뒤 자동 복귀까지.</p><a href="stitch/occucool-app/zone.html" target="_blank" rel="noopener">전체 화면 보기 ↗</a></figcaption>
+          </figure>
+          <figure class="app-shot" id="app-rules">
+            <div class="phone"><div class="screen" tabindex="0" aria-label="자동 제어 규칙 화면, 스크롤 가능"><img src="images/app/rules.png" alt="자동 제어 규칙: 인원 구간별 설정온도, 공실 유예시간, 수동 우선 시간 설정" loading="lazy"></div></div>
+            <figcaption><small>03</small><h3>자동 제어 규칙</h3><p>인원 구간별 온도와 공실 유예시간을 공간마다 조정합니다.</p><a href="images/app/rules.png" target="_blank" rel="noopener">전체 화면 보기 ↗</a></figcaption>
+          </figure>
+          <figure class="app-shot" id="app-report">
+            <div class="phone"><div class="screen" tabindex="0" aria-label="에너지 리포트 화면, 스크롤 가능"><img src="images/app/report.png" alt="에너지 리포트: 이번 달 15.2% 절감, 기준선 대비 사용량 차트, KPI, AI 제안 카드" loading="lazy"></div></div>
+            <figcaption><small>04</small><h3>에너지 리포트</h3><p>날씨 보정 기준선과 비교한 절감량, KPI, AI의 운영 제안.</p><a href="images/app/report.png" target="_blank" rel="noopener">전체 화면 보기 ↗</a></figcaption>
+          </figure>
+          <figure class="app-shot" id="app-alerts">
+            <div class="phone"><div class="screen"><iframe src="stitch/occucool-app/alerts.html" title="알림 센터 화면" loading="lazy"></iframe></div></div>
+            <figcaption><small>05</small><h3>알림 센터</h3><p>카메라 가림, 명령 실패 같은 이상을 긴급도별로 알립니다.</p><a href="stitch/occucool-app/alerts.html" target="_blank" rel="noopener">전체 화면 보기 ↗</a></figcaption>
+          </figure>
+        </div>
+        <p class="app-note">Google Stitch로 설계한 화면 시안입니다. 수치는 예시입니다.</p>
+      </div>
+    </section>
+
     <!-- ===== 성공 지표 ===== -->
     <section id="metrics">
       <div class="wrap">
@@ -2091,6 +2177,18 @@
       entries.forEach(en => { if (en.isIntersecting) markCurrent(en.target.id); });
     }, { rootMargin: '-45% 0px -50% 0px' });
     spySections.forEach(sec => spy.observe(sec));
+
+    // ----- 관리자 앱: iframe 화면을 폰 크기에 맞춤, 메뉴로 고른 화면 강조 -----
+    const fitScreens = new ResizeObserver(entries => {
+      entries.forEach(en => en.target.style.setProperty('--k', en.contentRect.width / 390));
+    });
+    document.querySelectorAll('.app-shot .screen').forEach(s => { if (s.querySelector('iframe')) fitScreens.observe(s); });
+    header.querySelectorAll('a[href^="#app-"]').forEach(a => a.addEventListener('click', () => {
+      const shot = document.querySelector(a.getAttribute('href'));
+      document.querySelectorAll('.app-shot.pick').forEach(s => s.classList.remove('pick'));
+      shot.classList.add('pick');
+      setTimeout(() => shot.classList.remove('pick'), 2400);
+    }));
 
     // ----- 제어 시뮬레이터 (PRD의 인원별 냉방 기준) -----
     const sim = document.getElementById('sim');
